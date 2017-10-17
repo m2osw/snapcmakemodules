@@ -1,3 +1,9 @@
+snapcmakemodules (1.0.35.1~xenial) xenial; urgency=high
+
+  * Moved to own archive and PPA.
+
+ -- R. Douglas Barbieri <doug@dooglio.net>  Sun, 15 Oct 2017 14:00:24 -0700
+
 snapcmakemodules (1.0.34.213~xenial) xenial; urgency=high
 
   * Nightly build.
