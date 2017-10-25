@@ -8,7 +8,7 @@
 # Debianized project (should be all of them), and then updates all control files
 # which rely on dependencies to require the new version.
 #
-die "usage: SnapBuildIncDeps.pl [cache filename]\n" unless $#ARGV == 1;
+die "usage: SnapBuildIncDeps.pl [cache filename]\n" unless $#ARGV == 0;
 
 use Cwd;
 use Dpkg::Changelog::Parse;
