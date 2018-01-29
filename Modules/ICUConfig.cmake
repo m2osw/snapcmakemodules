@@ -1,15 +1,46 @@
+################################################################################
+#
+# Copyright (c) 2011-2018  Made to Order Software Corp.  All Rights Reserved
+#
+# http://snapwebsites.org/
+# contact@m2osw.com
+# 
+# Permission is hereby granted, free of charge, to any person obtaining a copy
+# of this software and associated documentation files (the "Software"), to deal
+# in the Software without restriction, including without limitation the rights
+# to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
+# copies of the Software, and to permit persons to whom the Software is
+# furnished to do so, subject to the following conditions:
+# 
+# The above copyright notice and this permission notice shall be included in
+# all copies or substantial portions of the Software.
+# 
+# THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
+# IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
+# FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
+# AUTHORS OR COPYRIGHT HOLDERS BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+# LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
+# OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
+# THE SOFTWARE.
+#
+################################################################################
+#
 # Source: https://github.com/adobe/webkit/blob/master/Source/cmake/FindICU.cmake
 #
 # Finds the International Components for Unicode (ICU) Library
 #
-# ICU_FOUND - True if ICU found.
-# ICU_I18N_FOUND - True if ICU's internationalization library found.
-# ICU_INCLUDE_DIRS - Directory to include to get ICU headers
-# Note: always include ICU headers as, e.g.,
-# unicode/utypes.h
-# ICU_LIBRARIES - Libraries to link against for the common ICU
+# ICU_FOUND          - True if ICU found.
+# ICU_I18N_FOUND     - True if ICU's internationalization library found.
+# ICU_INCLUDE_DIRS   - Directory to include to get ICU headers
+#
+# Note: always include ICU headers including path, e.g.,
+#
+#       #include <unicode/utypes.h>
+#
+# ICU_LIBRARIES      - Libraries to link against for the common ICU
 # ICU_I18N_LIBRARIES - Libraries to link against for ICU internationaliation
-# (note: in addition to ICU_LIBRARIES)
+#                      (note: in addition to ICU_LIBRARIES)
+#
 
 # Look for the header file.
 FIND_PATH(

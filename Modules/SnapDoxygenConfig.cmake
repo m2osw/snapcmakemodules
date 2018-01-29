@@ -1,8 +1,6 @@
-# File:         FindSnapDoxygen.cmake
-# Object:       Find the Doxygen module and create a function which provides targets.
+################################################################################
 #
-# Copyright:    Copyright (c) 2011-2017 Made to Order Software Corp.
-#               All Rights Reserved.
+# Copyright (c) 2011-2018  Made to Order Software Corp.  All Rights Reserved
 #
 # http://snapwebsites.org/
 # contact@m2osw.com
@@ -24,6 +22,11 @@
 # LIABILITY, WHETHER IN AN ACTION OF CONTRACT, TORT OR OTHERWISE, ARISING FROM,
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
+#
+################################################################################
+#
+# File:         Modules/SnapDoxygenConfig.cmake
+# Object:       Find the Doxygen module and create a function which provides targets.
 #
 find_package( Doxygen )
 

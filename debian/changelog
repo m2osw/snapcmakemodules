@@ -1,20 +1,18 @@
-snapcmakemodules (1.0.35.3~xenial) xenial; urgency=high
+snapcmakemodules (1.0.36.0~xenial) xenial; urgency=high
 
-  * Nightly build.
+  * Added copyrights to many files that were missing such.
+  * Bump copyright notice year to 2018.
+  * Enhanced the README.md file.
+  * Fixed various commands about what gets defined (mainly plurals missing)
+  * Removed tabs from many files.
 
- -- R. Douglas Barbieri <doug@dooglio.net>  Tue, 24 Oct 2017 20:54:54 -0700
+ -- Alexis Wilke <alexis@m2osw.com>  Sun, 28 Jan 2018 22:55:40 -0700
 
 snapcmakemodules (1.0.35.1~xenial) xenial; urgency=high
 
   * Moved to own archive and PPA.
 
  -- R. Douglas Barbieri <doug@dooglio.net>  Sun, 15 Oct 2017 14:00:24 -0700
-
-snapcmakemodules (1.0.34.213~xenial) xenial; urgency=high
-
-  * Nightly build.
-
- -- Build Server <build@m2osw.com>  Sun, 26 Feb 2017 02:00:57 -0800
 
 snapcmakemodules (1.0.34.0~xenial) xenial; urgency=high
 
@@ -59,12 +57,6 @@ snapcmakemodules (1.0.28.0~xenial) xenial; urgency=high
   * Fixed the copyright file.
 
  -- Alexis Wilke <alexis@m2osw.com>  Sat,  7 Jan 2017 15:16:08 -0700
-
-snapcmakemodules (1.0.27.99~xenial) xenial; urgency=high
-
-  * Nightly build.
-
- -- Build Server <build@m2osw.com>  Sun, 25 Sep 2016 02:00:47 -0700
 
 snapcmakemodules (1.0.27.0~xenial) xenial; urgency=high
 

@@ -1,8 +1,6 @@
-# File:         FindSnapBuild.cmake
-# Object:       Provide functions to build projects.
+################################################################################
 #
-# Copyright:    Copyright (c) 2011-2017 Made to Order Software Corp.
-#               All Rights Reserved.
+# Copyright (c) 2011-2018  Made to Order Software Corp.  All Rights Reserved
 #
 # http://snapwebsites.org/
 # contact@m2osw.com
@@ -25,8 +23,10 @@
 # OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE USE OR OTHER DEALINGS IN
 # THE SOFTWARE.
 #
-# If you have included Snap's Third Party package, then this module will
-# point to that instead of trying to locate it on the system.
+################################################################################
+#
+# File:         FindSnapBuild.cmake
+# Object:       Include the SnapBuild CMake configuration file.
 #
 include( SnapBuildConfig )
 
