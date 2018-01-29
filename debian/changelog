@@ -1,3 +1,9 @@
+snapcmakemodules (1.0.37.0~xenial) xenial; urgency=high
+
+  * Added the generation of the source files in the build-dput script.
+
+ -- Alexis Wilke <alexis@m2osw.com>  Mon, 29 Jan 2018 00:39:42 -0700
+
 snapcmakemodules (1.0.36.0~xenial) xenial; urgency=high
 
   * Added copyrights to many files that were missing such.
