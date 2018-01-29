@@ -57,6 +57,11 @@ then
     exit 1
 fi
 
+if test ! -f ../${NAME}_${VERSION}_source.changes
+then
+    debuild -S -sa
+fi
+
 VERSION=`dpkg-parsechangelog --show-field Version`
 NAME=`dpkg-parsechangelog --show-field Source`
 
