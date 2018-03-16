@@ -110,7 +110,7 @@ function( SnapGetVersion PACKAGE_NAME WORKING_DIRECTORY )
         COMMAND ${DPKG_PARSECHANGELOG} -S Version
         WORKING_DIRECTORY ${WORKING_DIRECTORY}
         OUTPUT_VARIABLE VERSION
-        )
+    )
 
     string( REPLACE "\n" ""  ORIG_VERSION ${VERSION}      )
     string( REPLACE "."  " " VERSION      ${ORIG_VERSION} )
