@@ -94,6 +94,9 @@ find_package_handle_standard_args(
 
 
 find_program( DPKG_PARSECHANGELOG dpkg-parsechangelog )
+if( ${DPKG_PARSECHANGELOG} STREQUAL "DPKG_PARSECHANGELOG-NOTFOUND" )
+    message( FATAL_ERROR "dpkg-parsechangelog not found! Please install `dpkg-dev` and rerun CMake." )
+endif()
 
 # Use this function to parse the version from the debian/changelog.
 # It will create four variables in the parent scope, each with ${PACKAGE_NAME}_
