@@ -1,3 +1,10 @@
+snapcmakemodules (1.0.38.0~xenial) xenial; urgency=high
+
+  * Removed the -Wdisabled-optimization option which prevented a test from
+    compiling. The options should be removed on tests, though.
+
+ -- Alexis Wilke <alexis@m2osw.com>  Tue, 19 Jun 2018 00:45:23 -0700
+
 snapcmakemodules (1.0.37.1~xenial) xenial; urgency=high
 
   * Fixed the protocol to the snapwebsites.org.
