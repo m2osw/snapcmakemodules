@@ -1,3 +1,9 @@
+snapcmakemodules (1.0.39.0~xenial) xenial; urgency=high
+
+  * Added -D_GLIBCXX_ASSERTIONS to the debug command line.
+
+ -- Alexis Wilke <alexis@m2osw.com>  Mon, 25 Jun 2018 16:53:23 -0700
+
 snapcmakemodules (1.0.38.0~xenial) xenial; urgency=high
 
   * Removed the -Wdisabled-optimization option which prevented a test from
