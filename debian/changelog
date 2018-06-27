@@ -1,3 +1,9 @@
+snapcmakemodules (1.0.40.0~xenial) xenial; urgency=high
+
+  * Added a few -fsanitize to try to find a memory problem.
+
+ -- Alexis Wilke <alexis@m2osw.com>  Tue, 26 Jun 2018 15:16:57 -0700
+
 snapcmakemodules (1.0.39.0~xenial) xenial; urgency=high
 
   * Added -D_GLIBCXX_ASSERTIONS to the debug command line.
