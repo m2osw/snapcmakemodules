@@ -1,3 +1,9 @@
+snapcmakemodules (1.0.41.0~xenial) xenial; urgency=high
+
+  * Removed the -fsanitize from the release version.
+
+ -- Alexis Wilke <alexis@m2osw.com>  Wed, 27 Jun 2018 19:39:32 -0700
+
 snapcmakemodules (1.0.40.0~xenial) xenial; urgency=high
 
   * Added a few -fsanitize to try to find a memory problem.
