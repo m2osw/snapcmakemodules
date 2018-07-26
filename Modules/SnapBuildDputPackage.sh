@@ -70,10 +70,10 @@ then
     debuild -S -sa
     dput ppa:snapcpp/ppa ../${NAME}_${VERSION}_source.changes
 else
-    echo "error: debuild and dput not run because the source files already exists,"
-    echo "       you must change the version and try again."
-    exit 1
+    echo "warning: debuild and dput not run because the source files already exists,"
+    echo "         you must change the version and try again."
 fi
 
+exit 0
 
 # vim: ts=4 sw=4 et

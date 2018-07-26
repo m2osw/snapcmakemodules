@@ -1,3 +1,9 @@
+snapcmakemodules (1.0.43.0~xenial) xenial; urgency=high
+
+  * Fixed the SnapBuildDputPackage.sh and always exit with 0.
+
+ -- Alexis Wilke <alexis@m2osw.com>  Thu, 26 Jul 2018 09:22:37 -0700
+
 snapcmakemodules (1.0.42.0~xenial) xenial; urgency=high
 
   * Fixed the SnapBuildDputPackage so the NAME and VERSION variables get
