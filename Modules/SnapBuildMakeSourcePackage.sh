@@ -64,12 +64,15 @@ fi
 NAME=`dpkg-parsechangelog --show-field Source`
 VERSION=`dpkg-parsechangelog --show-field Version`
 FULLNAME=${NAME}_${VERSION}
-echo "Building source package for '${FULLNAME}'"
-rm -f ../${FULLNAME}.dsc ../${FULLNAME}_source.* ../${FULLNAME}.tar.gz
+
+# Remove all versions otherwise they pile up and it becomes a really long list
+#
+rm -f ../${NAME}_*.dsc ../${NAME}_*_source.* ../${NAME}_*.tar.gz
 
 # Build the source package itself. The output will be placed in the parent directory
 # of the CWD.
 #
+echo "Building source package for '${FULLNAME}'"
 debuild -S -sa -nc -m"${DEBEMAIL}"
 
 # vim: ts=4 sw=4 et

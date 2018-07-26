@@ -1,3 +1,18 @@
+snapcmakemodules (1.0.42.0~xenial) xenial; urgency=high
+
+  * Fixed the SnapBuildDputPackage so the NAME and VERSION variables get
+    defined before they get used.
+  * Applied a change to that script so it deletes all the existing source
+    files whatever the version when the current version gets created. This
+    makes for a much cleaner source tree afterward.
+  * Added the -Wnon-virtual-dtor warning so if our base classes are missing
+    the destructor, we're told by the compiler.
+  * Added the -Weffc++ warning to be told when a variable is not initialized
+    in a class (when the constructor gets used, we get warnings if a variable
+    member is not properly initialized.)
+
+ -- Alexis Wilke <alexis@m2osw.com>  Thu, 26 Jul 2018 00:39:37 -0700
+
 snapcmakemodules (1.0.41.0~xenial) xenial; urgency=high
 
   * Removed the -fsanitize from the release version.

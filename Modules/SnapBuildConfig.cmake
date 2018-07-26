@@ -295,7 +295,7 @@ function( ConfigureMakeProjectInternal )
         WORKING_DIRECTORY ${SRC_DIR}
         DEPENDS ${SNAPINCDEPS}
         COMMENT "Building debian source package for ${ARG_TARGET_NAME}"
-        )
+    )
     add_custom_target(
         ${ARG_TARGET_NAME}-dput
         COMMAND ${MAKE_DPUT_SCRIPT}
@@ -303,7 +303,7 @@ function( ConfigureMakeProjectInternal )
         DEPENDS ${DPUT_DEPS}
         WORKING_DIRECTORY ${SRC_DIR}
         COMMENT "Dputting debian package ${ARG_TARGET_NAME} to launchpad."
-        )
+    )
     set( PBUILD_OUTPUT ${BUILD_DIR}/pbuild.completed )
     add_custom_command(
         OUTPUT ${PBUILD_OUTPUT}
@@ -313,22 +313,22 @@ function( ConfigureMakeProjectInternal )
         DEPENDS ${PBUILDER_DEPS}
         WORKING_DIRECTORY ${SRC_DIR}
         COMMENT "Building debian package ${ARG_TARGET_NAME} with pbuilder-dist."
-        )
+    )
     add_custom_target(
         ${ARG_TARGET_NAME}-pbuilder
         DEPENDS ${PBUILD_OUTPUT}
         WORKING_DIRECTORY ${SRC_DIR}
-        )
+    )
 
     add_custom_target(
         ${ARG_TARGET_NAME}-clean
         COMMAND rm -f ${BUILD_DIR}/*.completed
-        )
+    )
 
     add_custom_target(
         ${ARG_TARGET_NAME}
         DEPENDS ${ARG_TARGET_NAME}-make
-        )
+    )
 endfunction()
 
 

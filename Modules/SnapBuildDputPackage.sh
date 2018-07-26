@@ -57,14 +57,23 @@ then
     exit 1
 fi
 
+NAME=`dpkg-parsechangelog --show-field Source`
+VERSION=`dpkg-parsechangelog --show-field Version`
+
 if test ! -f ../${NAME}_${VERSION}_source.changes
 then
+    # Remove old versions otherwise they pile up and it becomes
+    # a really long list difficult to manage
+    #
+    rm -f ../${NAME}_*.dsc ../${NAME}_*_source.* ../${NAME}_*.tar.gz
+
     debuild -S -sa
+    dput ppa:snapcpp/ppa ../${NAME}_${VERSION}_source.changes
+else
+    echo "error: debuild and dput not run because the source files already exists,"
+    echo "       you must change the version and try again."
+    exit 1
 fi
 
-VERSION=`dpkg-parsechangelog --show-field Version`
-NAME=`dpkg-parsechangelog --show-field Source`
-
-dput ppa:snapcpp/ppa ../${NAME}_${VERSION}_source.changes
 
 # vim: ts=4 sw=4 et
