@@ -35,7 +35,7 @@
 # Handle command line
 #
 set -e
-if [ -z "$1" ] && [ -z "$2" ] && [ -z "$3" ]
+if [ -z "$1" ] || [ -z "$2" ] || [ -z "$3" ]
 then
     echo "usage: $0 distribution component destpath"
     exit 1
