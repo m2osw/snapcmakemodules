@@ -1,3 +1,9 @@
+snapcmakemodules (1.0.44.0~xenial) xenial; urgency=high
+
+  * Fixed the sanitize variables (ADDRESS -> OPTION).
+
+ -- Alexis Wilke <alexis@m2osw.com>  Wed, 17 Apr 2019 00:39:36 -0700
+
 snapcmakemodules (1.0.43.1~xenial) xenial; urgency=high
 
   * Bumped version to try a rebuild on launchpad.
