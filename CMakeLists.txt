@@ -9,7 +9,7 @@
 #      See the CMake documentation.
 #
 # License:
-#      Copyright (c) 2011-2018  Made to Order Software Corp.  All Rights Reserved
+#      Copyright (c) 2011-2019  Made to Order Software Corp.  All Rights Reserved
 #
 #      http://snapwebsites.org/
 #      contact@m2osw.com
@@ -33,29 +33,44 @@ cmake_minimum_required(VERSION 3.5)
 
 project( snapCMakeModules )
 
-install( FILES Modules/CheckCXXAbstractClass.cmake DESTINATION share/cmake-3.5/Modules )
+install(
+    FILES
+        Modules/CheckCXXAbstractClass.cmake
+    DESTINATION
+        share/cmake-3.5/Modules
+)
 
-set( MODULES_LIST
-	CassandraCppDriver
-	Catch
-	CppUnit
-	ICU
-	LibEvent
-	log4cplus
-	Magic
-	ProcPS
-	QREncode
-	QxCppUnit
-	QxRunner
-	SnapBuild
-	SnapCMakeModules
-	SnapDoxygen
+set(MODULES_LIST
+    CassandraCppDriver
+    Catch
+    CppUnit
+    ICU
+    LibEvent
+    log4cplus
+    Magic
+    ProcPS
+    QREncode
+    QxCppUnit
+    QxRunner
+    SnapBuild
+    SnapCMakeModules
+    SnapDoxygen
 )
 
 foreach( _module ${MODULES_LIST} )
-	install( FILES Modules/${_module}Config.cmake DESTINATION share/cmake/${_module} )
+    install(
+        FILES
+            Modules/${_module}Config.cmake
+        DESTINATION
+            share/cmake/${_module} )
 endforeach()
 
 file( GLOB SCRIPTS Modules/*.sh Modules/*.pl )
-install( FILES ${SCRIPTS} DESTINATION bin )
+install(
+    FILES
+        ${SCRIPTS}
+    DESTINATION
+        bin
+)
 
+# vim: ts=4 sw=4 et

@@ -1,20 +1,20 @@
 ################################################################################
 #
-# Copyright (c) 2011-2018  Made to Order Software Corp.  All Rights Reserved
+# Copyright (c) 2011-2019  Made to Order Software Corp.  All Rights Reserved
 #
 # http://snapwebsites.org/
 # contact@m2osw.com
-# 
+#
 # Permission is hereby granted, free of charge, to any person obtaining a copy
 # of this software and associated documentation files (the "Software"), to deal
 # in the Software without restriction, including without limitation the rights
 # to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 # copies of the Software, and to permit persons to whom the Software is
 # furnished to do so, subject to the following conditions:
-# 
+#
 # The above copyright notice and this permission notice shall be included in
 # all copies or substantial portions of the Software.
-# 
+#
 # THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 # IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,
 # FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT. IN NO EVENT SHALL THE
@@ -48,7 +48,7 @@ find_program( REPREPRO_SCRIPT       SnapReprepro.sh                 PATHS ${CMAK
 #
 set( THE_CMAKE_BUILD_TOOL ${CMAKE_BUILD_TOOL} )
 if( ${CMAKE_VERSION} VERSION_GREATER 3.0.0 )
-    execute_process( 
+    execute_process(
         COMMAND nproc
         #OUTPUT_VARIABLE NUM_PROCS
         OUTPUT_VARIABLE NUM_JOBS
@@ -80,7 +80,7 @@ set( DEP_CACHE_FILE   "${CMAKE_BINARY_DIR}/deps.cache" CACHE INTERNAL "Cache fil
 set( REPO_ROOT_DIR    "/var/www/debian/nightly"        CACHE PATH     "Root level where the repository will go."             )
 
 message( STATUS "Scanning all projects..." )
-execute_process( 
+execute_process(
     COMMAND ${MAKE_DEPS_SCRIPT} ${CMAKE_SOURCE_DIR} ${DEP_CACHE_FILE}
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )
@@ -268,8 +268,8 @@ function( ConfigureMakeProjectInternal )
     #    COMMAND echo > ${MAKE_TARGET}
     #    DEPENDS ${ARG_TARGET_NAME}-make
     #    WORKING_DIRECTORY ${BUILD_DIR}
-    #    COMMENT "Target ${ARG_TARGET_NAME} successfully built!" 
-    #    )
+    #    COMMENT "Target ${ARG_TARGET_NAME} successfully built!"
+    #)
 
     unset( PBUILDER_DEPS )
     unset( DPUT_DEPS     )
@@ -370,16 +370,16 @@ function( ConfigureMakeProject )
     endif()
 
     message( STATUS "Searching dependencies for project '${ARG_PROJECT_NAME}'")
-    execute_process( 
+    execute_process(
         COMMAND ${FIND_DEPS_SCRIPT} ${DEP_CACHE_FILE} ${ARG_PROJECT_NAME}
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
         OUTPUT_VARIABLE DEPENDS_LIST
-        )
+    )
     separate_arguments( DEPENDS_LIST )
     set_property(
         GLOBAL PROPERTY ${ARG_PROJECT_NAME}_DEPENDS_LIST
         ${DEPENDS_LIST}
-        )
+    )
 
     ConfigureMakeProjectInternal(
         ${CONF_SCRIPT_OPTION}
