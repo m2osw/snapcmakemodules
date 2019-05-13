@@ -375,7 +375,15 @@ function( ConfigureMakeProject )
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
         OUTPUT_VARIABLE DEPENDS_LIST
     )
-    separate_arguments( DEPENDS_LIST )
+    separate_arguments(DEPENDS_LIST)
+
+    if(NOT EXISTS "${CMAKE_BINARY_DIR}/deps.dot")
+        file(WRITE "${CMAKE_BINARY_DIR}/deps.dot" "digraph dependencies {\n")
+    endif()
+    foreach( DEP ${DEPENDS_LIST} )
+        file(APPEND "${CMAKE_BINARY_DIR}/deps.dot" "\"${ARG_PROJECT_NAME}\" [shape=box];\n\"${ARG_PROJECT_NAME}\" -> \"${DEP}\";\n")
+    endforeach()
+
     set_property(
         GLOBAL PROPERTY ${ARG_PROJECT_NAME}_DEPENDS_LIST
         ${DEPENDS_LIST}
@@ -436,6 +444,17 @@ function( CreateTargets COMPONENT )
 
     if( ${COMPONENT} STREQUAL "top" )
         unset( COMP_SUFFIX )
+
+        file(APPEND "${CMAKE_BINARY_DIR}/deps.dot" "}\n")
+
+        # We change the name of the deps.dot file so next time the
+        # configuration runs it generates a brand new file
+        #
+        file(RENAME "${CMAKE_BINARY_DIR}/deps.dot" "${CMAKE_BINARY_DIR}/dependencies.dot")
+        execute_process(
+            COMMAND dot -Tsvg ${CMAKE_BINARY_DIR}/dependencies.dot
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            OUTPUT_FILE "${CMAKE_BINARY_DIR}/dependencies.svg")
     else()
         set( COMP_SUFFIX "-${COMPONENT}" )
     endif()
