@@ -52,6 +52,10 @@ sub projects_wanted
     {
         return;
     }
+    if( index($File::Find::name, "/archive/") != -1 )
+    {
+        return;
+    }
 
     $DIRHASH{$_} = $File::Find::name;
 }
