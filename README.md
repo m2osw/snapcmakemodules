@@ -1,7 +1,7 @@
 
 <p align="center">
 <img alt="advgetopt" title="CMake Module Extensions to Build Snap! C++."
-src="https://snapwebsites.org/sites/snapwebsites.org/files/images/cmake_logo_slider.png" width="277" height="277"/>
+src="https://snapwebsites.org/sites/snapwebsites.org/files/images/cmake_logo_slider.png" width="410" height="232"/>
 </p>
 
 # Snap! CMake modules
