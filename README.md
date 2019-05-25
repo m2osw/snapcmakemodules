@@ -1,4 +1,9 @@
 
+<p align="center">
+<img alt="advgetopt" title="CMake Module Extensions to Build Snap! C++."
+src="https://snapwebsites.org/sites/snapwebsites.org/files/images/cmake_logo_slider.png" width="277" height="277"/>
+</p>
+
 # Snap! CMake modules
 
 This project provides base CMake modules for use with the `snapcpp` suite of
