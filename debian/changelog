@@ -1,3 +1,10 @@
+snapcmakemodules (1.0.46.0~xenial) xenial; urgency=high
+
+  * Applied a fix to the FIND_DEPS_SCRIPT command so it breaks the build on
+    an error (i.e. a missing comma, for example.)
+
+ -- Alexis Wilke <alexis@m2osw.com>  Mon, 27 May 2019 02:25:00 -0700
+
 snapcmakemodules (1.0.45.0~xenial) xenial; urgency=high
 
   * Made a few clean ups.

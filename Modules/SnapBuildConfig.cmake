@@ -374,7 +374,11 @@ function( ConfigureMakeProject )
         COMMAND ${FIND_DEPS_SCRIPT} ${DEP_CACHE_FILE} ${ARG_PROJECT_NAME}
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
         OUTPUT_VARIABLE DEPENDS_LIST
+        RESULT_VARIABLE RETURN_VALUE
     )
+    if(NOT RETURN_VALUE EQUAL "0")
+        message( FATAL_ERROR "Gathering of project dependencies failed.")
+    endif()
     separate_arguments(DEPENDS_LIST)
 
     if(NOT EXISTS "${CMAKE_BINARY_DIR}/deps.dot")
