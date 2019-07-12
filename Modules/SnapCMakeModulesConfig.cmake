@@ -29,6 +29,20 @@
 # Object:       Common definitions for all M2OSW Snap! C++ projects
 #
 
+
+# Put the date & time on the g++ command line so we can use it in our
+# .cpp files (usually something like: BOOST_PP_STRINGIZE(UTC_BUILD_YEAR)
+# which transforms the data to a string)
+#
+execute_process(COMMAND "date" "-u" "+%Y" OUTPUT_VARIABLE UTC_BUILD_YEAR   OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(COMMAND "date" "-u" "+%m" OUTPUT_VARIABLE UTC_BUILD_MONTH  OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(COMMAND "date" "-u" "+%d" OUTPUT_VARIABLE UTC_BUILD_MDAY   OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(COMMAND "date" "-u" "+%H" OUTPUT_VARIABLE UTC_BUILD_HOUR   OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(COMMAND "date" "-u" "+%M" OUTPUT_VARIABLE UTC_BUILD_MINUTE OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(COMMAND "date" "-u" "+%S" OUTPUT_VARIABLE UTC_BUILD_SECOND OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUTC_BUILD_YEAR=${UTC_BUILD_YEAR} -DUTC_BUILD_MONTH=${UTC_BUILD_MONTH} -DUTC_BUILD_MDAY=${UTC_BUILD_MDAY} -DUTC_BUILD_HOUR=${UTC_BUILD_HOUR} -DUTC_BUILD_MINUTE=${UTC_BUILD_MINUTE} -DUTC_BUILD_SECOND=${UTC_BUILD_SECOND}")
+
 # TODO: Work on adding the following two additional warning captures
 #    -Wold-style-cast -Wnoexcept
 #
