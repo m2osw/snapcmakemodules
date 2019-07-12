@@ -1,6 +1,8 @@
 snapcmakemodules (1.0.47.0~xenial) xenial; urgency=high
 
   * Fixed the FindCatch.cmake, the REQUIRED was not properly tested.
+  * Added the UTC_BUILD_<date> fields to the command line so we can use
+    that information in our copyright notices.
 
  -- Alexis Wilke <alexis@m2osw.com>  Mon, 10 Jun 2019 16:42:26 -0700
 
