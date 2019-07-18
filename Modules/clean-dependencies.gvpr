@@ -1,0 +1,59 @@
+# Run with:
+#
+#    /usr/bin/gvpr -o clean-dependencies.dot -f clean-dependencies.gvpr dependencies.dot
+#
+# Clean up the dependencies.svg from double dependencies
+# In other words if A depends on B and C, and B also depends on C, we
+# can remove the link between A amd C, it's not necessary in our file.
+
+BEG_G {
+    edge_t direct_edges[int];
+    node_t children[int];
+
+    node_t n = fstnode($G);
+    while(n != NULL) {
+
+        // 1. extract the current node direct children
+        //
+        int direct_pos = 0;
+        edge_t e = fstout_sg($G, n);
+        while(e != NULL) {
+            direct_edges[direct_pos] = e;
+            children[direct_pos] = opp(e, n);
+            direct_pos = direct_pos + 1;
+            e = nxtout_sg($G, e);
+        }
+
+        // 2. find all of the grand children
+        //    and see whether some are duplicates, if so delete the
+        //    original (direct) edge
+        //
+        int child_pos = direct_pos;
+        int c = 0;
+        for(c = 0; c < child_pos; ++c) {
+            e = fstout_sg($G, children[c]);
+            while(e != NULL) {
+                node_t o = opp(e, children[c]);
+                int idx;
+                for(idx = 0; idx < direct_pos; ++idx) {
+                    if(children[idx] == o) {
+                        if(direct_edges[idx] != NULL) {
+                            delete($G, direct_edges[idx]);
+                            direct_edges[idx] = NULL;
+                        }
+                        break;
+                    }
+                }
+                e = nxtout_sg($G, e);
+            }
+        }
+
+        n = nxtnode_sg($G, n);
+    }
+}
+
+END_G {
+    $O = $G;
+}
+
+# vim: ts=4 sw=4 et nowrap

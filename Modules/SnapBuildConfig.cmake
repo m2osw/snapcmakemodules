@@ -459,6 +459,18 @@ function( CreateTargets COMPONENT )
             COMMAND dot -Tsvg ${CMAKE_BINARY_DIR}/dependencies.dot
             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
             OUTPUT_FILE "${CMAKE_BINARY_DIR}/dependencies.svg")
+
+        # The main dependencies.svg shows all the dependencies, which makes the
+        # graph very crowded, here we create another version cleaned up with
+        # the minimal number of links
+        #
+        execute_process(
+            COMMAND gvpr -o ${CMAKE_BINARY_DIR}/clean-dependencies.dot -f ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/clean-dependencies.gvpr ${CMAKE_BINARY_DIR}/dependencies.dot
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
+        execute_process(
+            COMMAND dot -Tsvg ${CMAKE_BINARY_DIR}/clean-dependencies.dot
+            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+            OUTPUT_FILE "${CMAKE_BINARY_DIR}/clean-dependencies.svg")
     else()
         set( COMP_SUFFIX "-${COMPONENT}" )
     endif()
