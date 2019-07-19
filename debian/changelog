@@ -1,8 +1,14 @@
+snapcmakemodules (1.0.49.0~xenial) xenial; urgency=high
+
+  * Changed C++ standard to 17 (-std=c++17).
+
+ -- Alexis Wilke <alexis@m2osw.com>  Fri, 19 Jul 2019 13:41:43 -0700
+
 snapcmakemodules (1.0.48.0~xenial) xenial; urgency=high
 
   * Added a clean-dependencies.gvpr script to remove redundant links.
 
- -- Alexis Wilke <alexis@m2osw.com>  Thu, 18 Jun 2019 08:50:58 -0700
+ -- Alexis Wilke <alexis@m2osw.com>  Thu, 18 Jul 2019 08:50:58 -0700
 
 snapcmakemodules (1.0.47.0~xenial) xenial; urgency=high
 
