@@ -67,6 +67,23 @@ if( ${CMAKE_SYSTEM_NAME} STREQUAL "Linux" )
 
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC" )
     set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -fPIC" )
+
+    # warning: the following assumes you are using g++
+    execute_process(
+        COMMAND
+            ${CMAKE_CXX_COMPILER} -dumpversion
+
+        OUTPUT_VARIABLE
+            GCC_VERSION
+    )
+
+    if(GCC_VERSION VERSION_GREATER 7.0)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wimplicit-fallthrough")
+    endif()
+
+    if(GCC_VERSION VERSION_GREATER 7.0)
+        set(CMAKE_CXX_STANDARD 17)
+    endif()
 else()
     message( WARNING "You may have problems trying to compile this code on non-*nix platforms." )
 endif()
