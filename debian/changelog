@@ -1,6 +1,7 @@
 snapcmakemodules (1.0.49.0~xenial) xenial; urgency=high
 
   * Changed C++ standard to 17 (-std=c++17).
+  * Added a linker flag "-Wl,--disable-new-dtags".
 
  -- Alexis Wilke <alexis@m2osw.com>  Fri, 19 Jul 2019 13:41:43 -0700
 

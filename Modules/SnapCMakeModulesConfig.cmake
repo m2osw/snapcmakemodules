@@ -75,6 +75,9 @@ endif()
 #                       and -DCMAKE_BUILD_TYPE=Debug
 option( ${PROJECT_NAME}_COVERAGE "Turn on coverage for ${PROJECT_NAME}." OFF )
 
+# Make sure we use RPATH instead of RUNPATH
+set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--disable-new-dtags" )
+
 if( ${${PROJECT_NAME}_COVERAGE} )
 	message("*** COVERAGE TURNED ON ***")
 	find_program( COV gcov )
