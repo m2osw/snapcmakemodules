@@ -82,6 +82,8 @@ if( ${CMAKE_SYSTEM_NAME} STREQUAL "Linux" )
     endif()
 
     if(GCC_VERSION VERSION_GREATER 7.0)
+        # We want c++17, not gnu++17
+        set(CMAKE_CXX_EXTENSIONS OFF)
         set(CMAKE_CXX_STANDARD 17)
     endif()
 else()
