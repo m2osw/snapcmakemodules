@@ -78,7 +78,7 @@ if( ${CMAKE_SYSTEM_NAME} STREQUAL "Linux" )
     )
 
     if(GCC_VERSION VERSION_GREATER 7.0)
-        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wimplicit-fallthrough")
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wimplicit-fallthrough=5")
     endif()
 
     if(GCC_VERSION VERSION_GREATER 7.0)
