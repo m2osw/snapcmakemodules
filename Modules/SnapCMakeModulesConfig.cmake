@@ -34,19 +34,34 @@
 # .cpp files (usually something like: BOOST_PP_STRINGIZE(UTC_BUILD_YEAR)
 # which transforms the data to a string)
 #
-execute_process(COMMAND "date" "-u" "+%Y" OUTPUT_VARIABLE UTC_BUILD_YEAR   OUTPUT_STRIP_TRAILING_WHITESPACE)
-execute_process(COMMAND "date" "-u" "+%m" OUTPUT_VARIABLE UTC_BUILD_MONTH  OUTPUT_STRIP_TRAILING_WHITESPACE)
-execute_process(COMMAND "date" "-u" "+%d" OUTPUT_VARIABLE UTC_BUILD_MDAY   OUTPUT_STRIP_TRAILING_WHITESPACE)
-execute_process(COMMAND "date" "-u" "+%H" OUTPUT_VARIABLE UTC_BUILD_HOUR   OUTPUT_STRIP_TRAILING_WHITESPACE)
-execute_process(COMMAND "date" "-u" "+%M" OUTPUT_VARIABLE UTC_BUILD_MINUTE OUTPUT_STRIP_TRAILING_WHITESPACE)
-execute_process(COMMAND "date" "-u" "+%S" OUTPUT_VARIABLE UTC_BUILD_SECOND OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(
+    COMMAND
+        "date" "-u" "+%Y-%m-%d %H:%M:%S"
 
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUTC_BUILD_YEAR=${UTC_BUILD_YEAR} -DUTC_BUILD_MONTH=${UTC_BUILD_MONTH} -DUTC_BUILD_MDAY=${UTC_BUILD_MDAY} -DUTC_BUILD_HOUR=${UTC_BUILD_HOUR} -DUTC_BUILD_MINUTE=${UTC_BUILD_MINUTE} -DUTC_BUILD_SECOND=${UTC_BUILD_SECOND}")
+    OUTPUT_VARIABLE
+        UTC_BUILD_FULLDATE
+
+    OUTPUT_STRIP_TRAILING_WHITESPACE
+)
+
+execute_process(COMMAND "date" "-u" "-d" "${UTC_BUILD_FULLDATE}" "+%Y"       OUTPUT_VARIABLE UTC_BUILD_YEAR      OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(COMMAND "date" "-u" "-d" "${UTC_BUILD_FULLDATE}" "+%m"       OUTPUT_VARIABLE UTC_BUILD_MONTH     OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(COMMAND "date" "-u" "-d" "${UTC_BUILD_FULLDATE}" "+%d"       OUTPUT_VARIABLE UTC_BUILD_MDAY      OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(COMMAND "date" "-u" "-d" "${UTC_BUILD_FULLDATE}" "+%H"       OUTPUT_VARIABLE UTC_BUILD_HOUR      OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(COMMAND "date" "-u" "-d" "${UTC_BUILD_FULLDATE}" "+%M"       OUTPUT_VARIABLE UTC_BUILD_MINUTE    OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(COMMAND "date" "-u" "-d" "${UTC_BUILD_FULLDATE}" "+%S"       OUTPUT_VARIABLE UTC_BUILD_SECOND    OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(COMMAND "date" "-u" "-d" "${UTC_BUILD_FULLDATE}" "+%s"       OUTPUT_VARIABLE UTC_BUILD_TIMESTAMP OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(COMMAND "date" "-u" "-d" "${UTC_BUILD_FULLDATE}" "+%Y-%m-%d" OUTPUT_VARIABLE UTC_BUILD_DATE      OUTPUT_STRIP_TRAILING_WHITESPACE)
+execute_process(COMMAND "date" "-u" "-d" "${UTC_BUILD_FULLDATE}" "+%H:%M:%S" OUTPUT_VARIABLE UTC_BUILD_TIME      OUTPUT_STRIP_TRAILING_WHITESPACE)
+
+
+
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DUTC_BUILD_YEAR=${UTC_BUILD_YEAR} -DUTC_BUILD_MONTH=${UTC_BUILD_MONTH} -DUTC_BUILD_MDAY=${UTC_BUILD_MDAY} -DUTC_BUILD_HOUR=${UTC_BUILD_HOUR} -DUTC_BUILD_MINUTE=${UTC_BUILD_MINUTE} -DUTC_BUILD_SECOND=${UTC_BUILD_SECOND} -DUTC_BUILD_TIME_STAMP=${UTC_BUILD_TIMESTAMP} -DUTC_BUILD_DATE='\"${UTC_BUILD_DATE}\"' -DUTC_BUILD_TIME='\"${UTC_BUILD_TIME}\"'")
 
 # TODO: Work on adding the following two additional warning captures
 #    -Wold-style-cast -Wnoexcept
 #
-set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -fdiagnostics-color -Werror -Wall -Wextra -pedantic -Wcast-align -Wcast-qual -Wctor-dtor-privacy -Winit-self -Wlogical-op -Wmissing-include-dirs -Woverloaded-virtual -Wredundant-decls -Wshadow -Wsign-promo -Wstrict-null-sentinel -Wstrict-overflow=2 -Wundef -Wno-unused -Wunused-variable -Wno-variadic-macros -Wno-parentheses -Wno-unknown-pragmas -Wwrite-strings -Wswitch -Wunused-parameter -Wfloat-equal -Wnon-virtual-dtor -Weffc++ -fdiagnostics-show-option -DQT_DISABLE_DEPRECATED_BEFORE=0x050501 -DQT_DEPRECATED_WARNINGS" )
+set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -fdiagnostics-color -Werror -Wall -Wextra -pedantic -Wcast-align -Wcast-qual -Wctor-dtor-privacy -Winit-self -Wlogical-op -Wmissing-include-dirs -Woverloaded-virtual -Wredundant-decls -Wshadow -Wsign-promo -Wstrict-null-sentinel -Wstrict-overflow=2 -Wundef -Wno-unused -Wunused-variable -Wno-variadic-macros -Wno-parentheses -Wno-unknown-pragmas -Wwrite-strings -Wswitch -Wunused-parameter -Wfloat-equal -Wnon-virtual-dtor -Weffc++ -Wdate-time -fdiagnostics-show-option -DQT_DISABLE_DEPRECATED_BEFORE=0x050501 -DQT_DEPRECATED_WARNINGS" )
 set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wall -Wextra -Wunused-parameter -fwrapv" )
 
 if( "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" )
