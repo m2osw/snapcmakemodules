@@ -30,6 +30,9 @@
 #
 
 
+set(CMAKE_CXX_EXTENSIONS OFF)
+
+
 # Put the date & time on the g++ command line so we can use it in our
 # .cpp files (usually something like: BOOST_PP_STRINGIZE(UTC_BUILD_YEAR)
 # which transforms the data to a string)
@@ -98,7 +101,6 @@ if( ${CMAKE_SYSTEM_NAME} STREQUAL "Linux" )
 
     if(NOT(GCC_VERSION VERSION_LESS 7.0))
         # We want c++17, not gnu++11
-        set(CMAKE_CXX_EXTENSIONS OFF)
         set(CMAKE_CXX_STANDARD 17)
     endif()
 else()
