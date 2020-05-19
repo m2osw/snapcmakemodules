@@ -13,6 +13,6 @@ Vcs-Browser: http://sourceforge.net/p/snapcpp/code/ci/master/tree/snapCMakeModul
 Package: snapcmakemodules
 Section: devel
 Architecture: any
-Depends: ${shlibs:Depends}, ${misc:Depends}
+Depends: ${shlibs:Depends}, ${misc:Depends}, dpkg-dev
 Description: Common Snap C++ CMake modules
  This package contains common CMake modules to support Snap C++ projects.
