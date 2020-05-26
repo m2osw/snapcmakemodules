@@ -52,7 +52,8 @@ sub projects_wanted
     {
         return;
     }
-    if( index($File::Find::name, "/archive/") != -1 )
+    if( index($File::Find::name, "/archive/") != -1
+    ||  index($File::Find::name, "/tmp/") != -1 )
     {
         return;
     }
