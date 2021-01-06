@@ -1,4 +1,4 @@
-snapcmakemodules (1.0.52.1~bionic) bionic; urgency=high
+snapcmakemodules (1.0.52.2~bionic) bionic; urgency=high
 
   * Bump version to get a newer version for the 3 distros "supported".
 
