@@ -33,16 +33,22 @@ find_package( Doxygen )
 ################################################################################
 # Add a target to generate API documentation with Doxygen
 #
-# Usage: AddDoxygenTarget( TARGET_NAME VERSION_MAJOR VERSION_MINOR VERSION_PATCH )
-# where: TARGET_NAME is the name of the project (e.g. libQtCassandra)
-#        VERSION_*   shall be used as the base of the tarball generated from the html folder.
+# Usage: AddDoxygenTarget(TARGET_NAME VERSION_MAJOR VERSION_MINOR VERSION_PATCH)
+# where: TARGET_NAME is the name of the project (e.g. libtld)
+#        VERSION_*   shall be used as the base of the tarball generated from
+#                    the html folder.
 #
-# AddDoxygenTarget() assumes that the doxyfile lives under CMAKE_CURRENT_SOURCE_DIR, with the name ${TARGET_NAME}.doxy.in.
-# The ".in" file must have the INPUT and OUTPUT_DIRECTORY values set appropriately. It is recommended to use @project_SOURCE_DIR@
-# for INPUT, where "project" is the actual name of your master project. You can either leave OUTPUT_DIRECTORY empty, or set it to
+# AddDoxygenTarget() assumes that the doxyfile lives under
+# CMAKE_CURRENT_SOURCE_DIR, with the name ${TARGET_NAME}.doxy.in.
+#
+# The ".in" file must have the INPUT and OUTPUT_DIRECTORY values set
+# appropriately. It is recommended to use @project_SOURCE_DIR@
+# for INPUT, where "project" is the actual name of your master project.
+# You can either leave OUTPUT_DIRECTORY empty, or set it to
 # @CMAKE_CURRENT_BINARY_DIR@.
 #
-# Also, for version, use @FULL_VERSION@, which contains the major, minor and patch.
+# Also, for version, use @FULL_VERSION@, which contains the major, minor
+# and patch.
 #
 function( AddDoxygenTarget TARGET_NAME VERSION_MAJOR VERSION_MINOR VERSION_PATCH )
     project( ${TARGET_NAME}_Documentation )
