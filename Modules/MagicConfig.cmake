@@ -32,39 +32,47 @@
 # Once done this will define
 #
 # MAGIC_FOUND        - System has Magick
-# MAGIC_INCLUDE_DIRS - The magick include directories
-# MAGIC_LIBRARIES    - The libraries needed to use magick
-# MAGIC_DEFINITIONS  - Compiler switches required for using magick
+# MAGIC_INCLUDE_DIRS - The magic include directories
+# MAGIC_LIBRARIES    - The libraries needed to use magic
+# MAGIC_DEFINITIONS  - Compiler switches required for using magic
 
-find_file( MAGIC magic.h )
-if( ${MAGIC} STREQUAL "MAGIC-NOTFOUND" )
-    message( FATAL_ERROR "Please install libmagic-dev!" )
-endif()
-get_filename_component( MAGIC_INCLUDE_PATH ${MAGIC} PATH )
+#find_file(MAGIC magic.h)
+#if(${MAGIC} STREQUAL "MAGIC-NOTFOUND")
+#    message(FATAL_ERROR "Please install libmagic-dev!")
+#endif()
+#get_filename_component(MAGIC_INCLUDE_PATH ${MAGIC} PATH)
+#
+#find_library(MAGIC_LIBRARY magic
+#    PATHS $ENV{MAGIC_LIBRARY}
+#)
+#if(${MAGIC_LIBRARY} STREQUAL "MAGIC_LIBRARY-NOTFOUND")
+#    message(FATAL_ERROR "Please install libmagic-dev!")
+#endif()
 
-find_library( MAGIC_LIBRARY magic )
-if( ${MAGIC_LIBRARY} STREQUAL "MAGIC_LIBRARY-NOTFOUND" )
-    message( FATAL_ERROR "Please install libmagic-dev!" )
-endif()
 
 
+find_path(MAGIC_INCLUDE_DIR magic.h
+    PATHS $ENV{MAGIC_INCLUDE_DIR}
+)
 
-find_path( MAGIC_INCLUDE_DIR magic.h
-        PATHS $ENV{MAGIC_INCLUDE_DIR}
-    )
+find_library(MAGIC_LIBRARY event
+    PATHS $ENV{MAGIC_LIBRARY}
+)
 
-find_library( MAGIC_LIBRARY event
-        PATHS $ENV{MAGIC_LIBRARY}
-    )
+mark_as_advanced(MAGIC_INCLUDE_DIR MAGIC_LIBRARY)
 
-mark_as_advanced( MAGIC_INCLUDE_DIR MAGIC_LIBRARY )
+set(MAGIC_INCLUDE_DIRS ${MAGIC_INCLUDE_DIR})
+set(MAGIC_LIBRARIES    ${MAGIC_LIBRARY}    )
 
-set( MAGIC_INCLUDE_DIRS ${MAGIC_INCLUDE_DIR} )
-set( MAGIC_LIBRARIES    ${MAGIC_LIBRARY}     )
-
-include( FindPackageHandleStandardArgs )
 # handle the QUIETLY and REQUIRED arguments and set MAGIC_FOUND to TRUE
 # if all listed variables are TRUE
-find_package_handle_standard_args( MAGIC DEFAULT_MSG MAGIC_INCLUDE_DIR MAGIC_LIBRARY )
+#
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(
+    Magic
+    DEFAULT_MSG
+    MAGIC_INCLUDE_DIR
+    MAGIC_LIBRARY
+)
 
 # vim: ts=4 sw=4 et
