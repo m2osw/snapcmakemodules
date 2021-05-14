@@ -55,7 +55,7 @@ find_path(MAGIC_INCLUDE_DIR magic.h
     PATHS $ENV{MAGIC_INCLUDE_DIR}
 )
 
-find_library(MAGIC_LIBRARY event
+find_library(MAGIC_LIBRARY magic
     PATHS $ENV{MAGIC_LIBRARY}
 )
 
