@@ -1,6 +1,6 @@
 ################################################################################
 #
-# Copyright (c) 2011-2019  Made to Order Software Corp.  All Rights Reserved
+# Copyright (c) 2011-2021  Made to Order Software Corp.  All Rights Reserved
 #
 # http://snapwebsites.org/
 # contact@m2osw.com
@@ -34,20 +34,27 @@
 # LIBQRENCODE_LIBRARIES    - The libraries needed to use qrencode
 # LIBQRENCODE_DEFINITIONS  - Compiler switches required for using qrencode (none)
 
-find_path( LIBQRENCODE_INCLUDE_DIR qrencode.h
-        PATHS $ENV{LIBQRENCODE_INCLUDE_DIR}
-    )
-find_library( LIBQRENCODE_LIBRARY qrencode
-        PATHS $ENV{LIBQRENCODE_LIBRARY}
-    )
-mark_as_advanced( LIBQRENCODE_INCLUDE_DIR LIBQRENCODE_LIBRARY )
+find_path(LIBQRENCODE_INCLUDE_DIR qrencode.h
+    PATHS $ENV{LIBQRENCODE_INCLUDE_DIR}
+)
+find_library(LIBQRENCODE_LIBRARY qrencode
+    PATHS $ENV{LIBQRENCODE_LIBRARY}
+)
 
-set( LIBQRENCODE_INCLUDE_DIRS ${LIBQRENCODE_INCLUDE_DIR} )
-set( LIBQRENCODE_LIBRARIES    ${LIBQRENCODE_LIBRARY}     )
+mark_as_advanced(LIBQRENCODE_INCLUDE_DIR LIBQRENCODE_LIBRARY)
 
-include( FindPackageHandleStandardArgs )
+set(LIBQRENCODE_INCLUDE_DIRS ${LIBQRENCODE_INCLUDE_DIR})
+set(LIBQRENCODE_LIBRARIES    ${LIBQRENCODE_LIBRARY})
+
 # handle the QUIETLY and REQUIRED arguments and set LIBQRENCODE_FOUND to TRUE
 # if all listed variables are TRUE
-find_package_handle_standard_args( LibQRENCODE DEFAULT_MSG LIBQRENCODE_INCLUDE_DIR LIBQRENCODE_LIBRARY )
+#
+include(FindPackageHandleStandardArgs)
+find_package_handle_standard_args(
+    LibQREncode
+    DEFAULT_MSG
+    LIBQRENCODE_INCLUDE_DIR
+    LIBQRENCODE_LIBRARY
+)
 
 # vim: ts=4 sw=4 et
