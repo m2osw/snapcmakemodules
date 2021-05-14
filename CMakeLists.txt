@@ -49,7 +49,7 @@ set(MODULES_LIST
     log4cplus
     Magic
     ProcPS
-    QREncode
+    LibQREncode
     QxCppUnit
     QxRunner
     SnapBuild
