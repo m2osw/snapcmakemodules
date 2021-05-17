@@ -130,7 +130,7 @@ function( ConfigureMakeProjectInternal )
         message( FATAL_ERROR "You must specify TARGET_NAME!" )
     endif()
     if( NOT ARG_COMPONENT )
-        message( FATAL_ERROR "You must specify COMPONENT (main, config, non-free, etc)!" )
+        message( FATAL_ERROR "You must specify COMPONENT (main, build, config, non-free, etc)!" )
     endif()
 
     set( SRC_DIR        ${CMAKE_CURRENT_SOURCE_DIR}/${ARG_PROJECT_NAME} )
@@ -366,7 +366,7 @@ function( ConfigureMakeProject )
         set( CONF_SCRIPT_OPTION "USE_CONFIGURE_SCRIPT" )
     endif()
     if( NOT ARG_COMPONENT )
-        message( FATAL_ERROR "You must specify COMPONENT (main, config, non-free, etc)!" )
+        message( FATAL_ERROR "You must specify COMPONENT (main, build, config, non-free, etc)!" )
     endif()
 
     message( STATUS "Searching dependencies for project '${ARG_PROJECT_NAME}'")
@@ -386,6 +386,14 @@ function( ConfigureMakeProject )
     endif()
     foreach( DEP ${DEPENDS_LIST} )
         file(APPEND "${CMAKE_BINARY_DIR}/deps.dot" "\"${ARG_PROJECT_NAME}\" [shape=box];\n\"${ARG_PROJECT_NAME}\" -> \"${DEP}\";\n")
+    endforeach()
+
+    if(NOT EXISTS "${CMAKE_BINARY_DIR}/deps.make")
+        file(WRITE "${CMAKE_BINARY_DIR}/deps.make" "# skeleton Makefile showing build dependencies\n")
+    endif()
+    file(APPEND "${CMAKE_BINARY_DIR}/deps.make" "\n${ARG_PROJECT_NAME}:")
+    foreach( DEP ${DEPENDS_LIST} )
+        file(APPEND "${CMAKE_BINARY_DIR}/deps.make" " ${DEP}")
     endforeach()
 
     set_property(
@@ -449,6 +457,7 @@ function( CreateTargets COMPONENT )
     if( ${COMPONENT} STREQUAL "top" )
         unset( COMP_SUFFIX )
 
+        file(APPEND "${CMAKE_BINARY_DIR}/deps.make" "\n")
         file(APPEND "${CMAKE_BINARY_DIR}/deps.dot" "}\n")
 
         # We change the name of the deps.dot file so next time the
@@ -462,7 +471,7 @@ function( CreateTargets COMPONENT )
 
         # The main dependencies.svg shows all the dependencies, which makes the
         # graph very crowded, here we create another version cleaned up with
-        # the minimal number of links
+        # the (nearly) minimal number of links
         #
         execute_process(
             COMMAND gvpr -o ${CMAKE_BINARY_DIR}/clean-dependencies.dot -f ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/clean-dependencies.gvpr ${CMAKE_BINARY_DIR}/dependencies.dot

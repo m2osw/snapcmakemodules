@@ -4,7 +4,7 @@
 #
 # Clean up the dependencies.svg from double dependencies
 # In other words if A depends on B and C, and B also depends on C, we
-# can remove the link between A amd C, it's not necessary in our file.
+# can remove the link between A and C, it's not necessary in our file.
 
 BEG_G {
     edge_t direct_edges[int];
