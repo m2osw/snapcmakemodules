@@ -1,3 +1,10 @@
+snapcmakemodules (1.0.54.0~bionic) bionic; urgency=high
+
+  * Added the DumpCMakeVariablesConfig.cmake file.
+  * Various cleanups (copyright notices, spaces, newlines...)
+
+ -- Alexis Wilke <alexis@m2osw.com>  Sat, 29 May 2021 16:16:52 -0700
+
 snapcmakemodules (1.0.53.0~bionic) bionic; urgency=high
 
   * Fixed three modules which had a name mismatched.
