@@ -5,8 +5,8 @@
 # Author: R. Douglas Barbieri
 #
 # This perl script goes through the entire tree of projects, finds all of the
-# Debianized project (should be all of them) then adds a new changelog record with
-# an incremented build number.
+# Debianized projects (should be all of them) then adds a new changelog record
+# with an incremented build number.
 #
 ################################################################################
 #
@@ -35,7 +35,7 @@
 #
 ################################################################################
 #
-die "usage: SnapBuildIncVers.pl [cache filename] [dist]\n" unless $#ARGV == 1;
+die "usage: SnapBuildIncVers.pl <cache filename> <dist>\n" unless $#ARGV == 1;
 
 use strict;
 use Cwd;
