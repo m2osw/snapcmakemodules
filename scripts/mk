@@ -36,7 +36,7 @@ LESS=false
 DOCS=false
 COVERAGE=false
 TEST=false
-TESTS=""
+TESTS="${TEST_OPTIONS}"		# TEST_OPTIONS can be defined by the project to add default options to always use along the unittest
 
 while test -n "${1}"
 do
