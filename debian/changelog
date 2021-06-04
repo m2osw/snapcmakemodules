@@ -1,3 +1,9 @@
+snapcmakemodules (1.0.55.0~bionic) bionic; urgency=high
+
+  * Moved my `mk` script here so I don't have to copy/paste and badly update it.
+
+ -- Alexis Wilke <alexis@m2osw.com>  Fri, 04 Jun 2021 13:01:43 -0700
+
 snapcmakemodules (1.0.54.0~bionic) bionic; urgency=high
 
   * Added the DumpCMakeVariablesConfig.cmake file.
