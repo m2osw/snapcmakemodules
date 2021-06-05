@@ -25,11 +25,12 @@ PARENTNAME=`basename ${PARENTDIR}`
 if test "${PARENTNAME}" != "contrib"
 then
 	CONTRIBDIR=""
-	BUILD="../BUILD"
+	TOPDIR=".."
 else
 	CONTRIBDIR="contrib/"
-	BUILD="../../BUILD"
+	TOPDIR="../.."
 fi
+BUILD="${TOPDIR}/BUILD"
 TYPE="Debug"
 TARGET=
 LESS=false
@@ -37,16 +38,12 @@ DOCS=false
 COVERAGE=false
 TEST=false
 TESTS="${TEST_OPTIONS}"		# TEST_OPTIONS can be defined by the project to add default options to always use along the unittest
+LAUNCHPAD=false
 
 while test -n "${1}"
 do
 	case ${1} in
-	"-b"|"--debug")
-		shift
-		TYPE="Debug"
-		;;
-
-	"-c"|"--coverage")
+	"--coverage"|"-c")
 		if test ! -x dev/coverage
 		then
 			# TODO: move the coverage script to cmake/scripts along this mk script
@@ -57,7 +54,7 @@ do
 		COVERAGE=true
 		;;
 
-	"-d"|"--documentation")
+	"--documentation"|"-d")
 		if test ! -d doc
 		then
 			echo "error: doc folder not present; option not available."
@@ -67,21 +64,27 @@ do
 		DOCS=true
 		;;
 
+	"--debug"|"-g")
+		shift
+		TYPE="Debug"
+		;;
+
 	"-h"|"--help")
 		echo "Usage: ${0} [-opts]"
 		echo "where -opts are:"
-		echo "  -b | --debug           Build the Debug version."
-		echo "  -c | --coverage        Run the tests to determine coverage."
+		echo "  --coverage | -c        Run the tests to determine coverage."
 		echo "                         Use -t with -c to only run coverage for those tests."
-		echo "  -d | --documentation   Delete the documentation so it gets rebuilt."
-		echo "  -h | --help            Print out this help screen."
-		echo "  -i | --install         Install once built."
-		echo "  -l | --less            Force output through less."
-		echo "  -p | --processors      Change the number of processors."
-		echo "  -r | --release         Build the Release version."
-		echo "  -s | --sanitize        Build the Sanitized version."
-		echo "  -t | --test            Build and then run the tests."
-		echo "  -v | --verbose         Render the 'make' tool verbose."
+		echo "  --documentation | -d   Rebuild the documentation."
+		echo "  --debug | -g           Build the Debug version."
+		echo "  --help | -h            Print out this help screen."
+		echo "  --install | -i         Install once built."
+		echo "  --less | -l            Force output through less."
+		echo "  --packages | -b        Build packages on launchpad."
+		echo "  --processors | -p      Change the number of processors."
+		echo "  --release | -r         Build the Release version."
+		echo "  --sanitize | -s        Build the Sanitized version."
+		echo "  --test | -t <name> ... Build and then run the tests."
+		echo "  --verbose | -v         Render the 'make' tool verbose."
 		echo "  --version              Current version of the project."
 		exit 0
 		;;
@@ -94,6 +97,21 @@ do
 	"-l"|"--less")
 		shift
 		LESS=true
+		;;
+
+	"-b"|"--packages")
+		if test ! -d debian
+		then
+			echo "error: build on launchpad not available, debian folder not found."
+			exit 1
+		fi
+		read -p "Are you sure you are ready to build on Launchpad? y/[N] " answer
+		if test "${answer}" != "y" -o "${answer}" != "Y"
+		then
+			echo "warning: the build was not approved."
+			exit 1
+		fi
+		LAUNCHPAD=true
 		;;
 
 	"-p"|"--processors")
@@ -187,6 +205,17 @@ fi
 
 if [[ ${RESULT} = 0 ]]
 then
+	if ${LAUNCHPAD}
+	then
+		cd ${TOPDIR}
+		if test ! -d ~/.build-snap.rc
+		then
+			echo
+			echo "warning: no ~/.build-snap.rc file found, send-to-lanchpad.sh may fail because it can't properly sign the source files."
+			echo
+		fi
+		bin/send-to-launchpad.sh ${PROJECT}
+	fi
 	echo
 	echo "Success."
 else
