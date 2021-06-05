@@ -1,3 +1,9 @@
+snapcmakemodules (1.0.56.0~bionic) bionic; urgency=high
+
+  * Added a couple more command line options to the mk script.
+
+ -- Alexis Wilke <alexis@m2osw.com>  Fri, 04 Jun 2021 17:16:42 -0700
+
 snapcmakemodules (1.0.55.0~bionic) bionic; urgency=high
 
   * Moved my `mk` script here so I don't have to copy/paste and badly update it.
