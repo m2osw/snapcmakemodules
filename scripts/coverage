@@ -49,6 +49,8 @@ fi
 
 PROJECT_NAME=`dpkg-parsechangelog --show-field Source`
 SOURCE=`pwd`
+SCRIPTS_LOCAL_PATH=`dirname $0`
+SCRIPTS=`cd $SCRIPTS_LOCAL_PATH; pwd`
 VERSION=`dpkg-parsechangelog --show-field Version | sed -e 's/~.*//' -e 's/\(^[0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/'`
 PROCESSORS=1
 ARGS="--progress"
@@ -224,7 +226,7 @@ cmake -DCMAKE_INSTALL_PREFIX:PATH="${DIST}" \
     -DCMAKE_BUILD_TYPE=Debug \
     -DSANITIZE:BOOL=ON \
     -DCOVERAGE:BOOL=ON \
-        ../../.. 2>&1 | tee -a cmake_log.txt; test ${PIPESTATUS[0]} -eq 0
+        ../../.. 2>&1 | tee -a ../cmake_log.txt; test ${PIPESTATUS[0]} -eq 0
 cd ..
 
 
@@ -300,12 +302,28 @@ END_DATE=`date`
 
 # Statistics
 echo "<html><head><title>${PROJECT_NAME} $VERSION statistics</title></head><body>" >html/statistics.html
-echo "<h3>Statistics of the ${PROJECT_NAME} $VERSION library</h3><pre>" >>html/statistics.html
-cloc $SOURCE/${PROJECT_NAME}/ >>html/statistics.html
-echo "</pre><h3>Statistics of the ${PROJECT_NAME} $VERSION tests</h3><pre>" >>html/statistics.html
-cloc $SOURCE/tests/ >>html/statistics.html
-#echo "</pre><h3>Statistics of ${PROJECT_NAME} tools $VERSION</h3><pre>" >>html/statistics.html
-#cloc $SOURCE/tools/ >>html/statistics.html
+
+if test -d $SOURCE/${PROJECT_NAME}
+then
+    echo "<h3>Statistics of the ${PROJECT_NAME} v${VERSION} library</h3><pre>" >>html/statistics.html
+    cloc $SOURCE/${PROJECT_NAME}/ >>html/statistics.html
+fi
+
+if test -d $SOURCE/tests
+then
+    echo "</pre><h3>Statistics of the ${PROJECT_NAME} v${VERSION} tests</h3><pre>" >>html/statistics.html
+    cloc $SOURCE/tests/ >>html/statistics.html
+fi
+
+# TODO: support more than one "tools" directory, many of the projects include
+#       several tools;
+#
+if test -d $SOURCE/tools
+then
+    echo "</pre><h3>Statistics of ${PROJECT_NAME} tools v${VERSION}</h3><pre>" >>html/statistics.html
+    cloc $SOURCE/tools/ >>html/statistics.html
+fi
+
 echo "</pre></body></html>" >>html/statistics.html
 
 # CMake output (Logs)
@@ -350,7 +368,9 @@ then
     mkdir -p ${PUBLISH_DIR}/${PROJECT_NAME}/${PROJECT_NAME}-$VERSION
 
     # Make sure we have the latest index
-    cp $SOURCE/dev/index.php ${PUBLISH_DIR}/${PROJECT_NAME}/.
+    sed -e "s/@PROJECT_NAME@/${PROJECT_NAME}/" \
+        $SCRIPTS/index.php \
+            >${PUBLISH_DIR}/${PROJECT_NAME}/index.php
 
     # Copy coverage and statistics HTML results
     cp -r html/* ${PUBLISH_DIR}/${PROJECT_NAME}/${PROJECT_NAME}-$VERSION/.

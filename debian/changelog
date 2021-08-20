@@ -7,6 +7,9 @@ snapcmakemodules (1.0.58.0~bionic) bionic; urgency=high
   * Renamed the SANITIZE_OPTIONS as just SANITIZE.
   * Print a message when the SANITIZE:BOOL=ON is used.
   * Removed the `${project_name}_` from the `COVERAGE` option.
+  * Added the index.php used by the coverage to the cmake project.
+  * Fixed location of the cmake_log.txt file.
+  * Added tests for the cloc statistics (this still needs work).
 
  -- Alexis Wilke <alexis@m2osw.com>  Fri, 20 Aug 2021 15:51:25 -0700
 
