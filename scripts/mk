@@ -15,6 +15,7 @@ then
 	exit 1
 fi
 
+
 FULL_VERSION=`dpkg-parsechangelog --show-field Version | sed -e 's/~.*//' -e 's/\(^[0-9]\+\.[0-9]\+\.[0-9]\+.[0-9]\+\).*/\1/'`
 DOC_VERSION=`echo ${FULL_VERSION} | sed -e 's/\(^[0-9]\+\.[0-9]\+\).*/\1/'`
 SOURCE=`pwd`
@@ -35,7 +36,7 @@ TYPE="Debug"
 TARGET=
 LESS=false
 DOCS=false
-COVERAGE=false
+COVERAGE=
 TEST=false
 TESTS="${TEST_OPTIONS}"		# TEST_OPTIONS can be defined by the project to add default options to always use along the unittest
 LAUNCHPAD=false
@@ -43,15 +44,23 @@ LAUNCHPAD=false
 while test -n "${1}"
 do
 	case ${1} in
+	"--clean")
+		shift
+		TARGET=clean
+		;;
+
 	"--coverage"|"-c")
-		if test ! -x dev/coverage
+		if test -x ../cmake/scripts/coverage
 		then
-			# TODO: move the coverage script to cmake/scripts along this mk script
-			echo "error: coverage script not yet available for this project."
+			COVERAGE=../cmake/scripts/coverage
+		elif test -x ../../cmake/scripts/coverage
+		then
+			COVERAGE=../../cmake/scripts/coverage
+		else
+			echo "error: could not find the coverage script in .../cmake/scripts"
 			exit 1
 		fi
 		shift
-		COVERAGE=true
 		;;
 
 	"--documentation"|"-d")
@@ -163,6 +172,33 @@ do
 	esac
 done
 
+if test "${TARGET}" = "clean"
+then
+	if test -n "${COVERAGE}"
+	then
+		echo "error: --clean and --coverage can't be used together."
+		exit 1
+	fi
+	if ${TEST}
+	then
+		echo "error: --clean and --test can't be used together."
+		exit 1
+	fi
+	if ${DOCS}
+	then
+		echo "error: --clean and --documentation can't be used together."
+		exit 1
+	fi
+
+	rm -rf tmp/coverage
+	rmdir --ignore-fail-on-non-empty tmp
+
+	# Also delete the docs so they get rebuilt too
+	# (I know the last test above is contradictory...)
+	#
+	DOCS=true
+fi
+
 
 OUTPUT="${BUILD}/${TYPE}/${CONTRIBDIR}${PROJECT}"
 
@@ -186,9 +222,9 @@ fi
 
 if [[ ${RESULT} = 0 ]]
 then
-	if ${COVERAGE}
+	if test -n "${COVERAGE}"
 	then
-		dev/coverage ${TESTS}
+		${COVERAGE} ${TESTS}
 		RESULT=${?}
 	elif ${TEST}
 	then
@@ -211,7 +247,8 @@ then
 		if test ! -d ~/.build-snap.rc
 		then
 			echo
-			echo "warning: no ~/.build-snap.rc file found, send-to-lanchpad.sh may fail because it can't properly sign the source files."
+			echo "warning: no ~/.build-snap.rc file found, send-to-lanchpad.sh may fail"
+			echo "warning: because it can't properly sign the source files."
 			echo
 		fi
 		bin/send-to-launchpad.sh ${PROJECT}
@@ -220,6 +257,8 @@ then
 	echo "Success."
 else
 	echo
-	echo "Build failed."
+	echo "Build, Tests, or Coverage failed."
+
+	exit 1
 fi
 

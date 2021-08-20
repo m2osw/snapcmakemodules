@@ -1,0 +1,367 @@
+#!/bin/bash -e
+#
+# Copyright (c) 2013-2021  Made to Order Software Corp.  All Rights Reserved
+#
+# https://snapwebsites.org/
+# contact@m2osw.com
+# 
+# This program is free software; you can redistribute it and/or modify
+# it under the terms of the GNU General Public License as published by
+# the Free Software Foundation; either version 2 of the License, or
+# (at your option) any later version.
+#
+# This program is distributed in the hope that it will be useful,
+# but WITHOUT ANY WARRANTY; without even the implied warranty of
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+# GNU General Public License for more details.
+#
+# You should have received a copy of the GNU General Public License along
+# with this program; if not, write to the Free Software Foundation, Inc.,
+# 51 Franklin St, Fifth Floor, Boston, MA  02110-1301  USA
+
+
+#
+# Generic script to run coverage tests against one of the Snap! Projects.
+#
+
+
+#
+# VERIFY STATE
+#
+
+if test ! -d debian
+then
+        echo "error: this script is expected to be run from the top folder of a project (where the debian folder appears)."
+        exit 1
+fi
+
+if test "`whoami`" = "root"
+then
+        echo "error: you do not want to run this script as root."
+        exit 1
+fi
+
+
+
+#
+# SETUP PARAMETERS
+#
+
+PROJECT_NAME=`dpkg-parsechangelog --show-field Source`
+SOURCE=`pwd`
+VERSION=`dpkg-parsechangelog --show-field Version | sed -e 's/~.*//' -e 's/\(^[0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/'`
+PROCESSORS=1
+ARGS="--progress"
+TESTS=
+PUBLISH_DIR=
+
+# Source the user defined .build-snap.rc file
+# In most cases this is used to define the PROCESSORS variable
+# and the PUBLISH_DIR which is likely different on your system
+# than mine
+#
+if test -f ~/.build-snap.rc
+then
+	# This lets you redefine one or more of the variables defined above
+	# this "if-block"
+	#
+	. ~/.build-snap.rc
+fi
+
+
+# To determine the DIST folder, we use a "cd ..." so that way we know whether
+# it exists or not (i.e. trying to run the coverage command before the full
+# build will fail)
+#
+if test -d ../BUILD
+then
+    DIST=`cd ../BUILD/Debug/dist && pwd`
+else
+    DIST=`cd ../../BUILD/Debug/dist && pwd`
+fi
+
+
+
+while test -n "$1"
+do
+    case "$1" in
+    "--args")
+        shift
+        ARGS="$1"
+        shift
+        ;;
+
+    "--help"|"-h")
+        echo "Usage: $0 [--opt] <test-name or tag> ..."
+        echo "where --opt is one of:"
+        echo "   --args <extra-arguments>"
+        echo "                  replace the list of additional argments to run the tests"
+        echo "   --help | -h    display this help screen"
+        echo "   --processors <count>"
+        echo "                  number of processors to use to run the tests"
+        echo "   --project | -p <name>"
+        echo "                  force the name of the project"
+        echo "   --publish-dir  path to directory where the results are published (html)"
+        echo "   --version      display version and exit"
+        echo
+        echo "The command can be followed by test names if you want to determine coverage"
+        echo "for a specific test. At this time, this blows away the full coverage."
+        echo "(i.e. there is only one output folder)"
+        exit 1
+        ;;
+
+    "--processors")
+        shift
+        if test -z "$1"
+        then
+            echo "error: --processors must be followed by the number of processors you want to use"
+            exit 1
+        fi
+        PROCESSORS="$1"
+        shift
+        ;;
+
+    "--project"|"-p")
+        shift
+        if test -z "$1"
+        then
+            echo "error: project name is mandatory after --project"
+            exit 1
+        fi
+        PROJECT_NAME="$1"
+        shift
+        ;;
+
+    "--publish-dir")
+        shift
+        PUBLISH_DIR="$1"
+        shift
+        ;;
+
+    "--version")
+        echo "Project Version: ${VERSION}"
+        exit 1
+        ;;
+
+    *)
+        TESTS="$TESTS $1"
+        shift
+        ;;
+
+    esac
+done
+
+if test -z "${PROJECT_NAME}"
+then
+    echo "error: the name of the project is mandatory (see --project option)"
+    exit 1
+fi
+
+if test ${PROCESSORS} -le 0
+then
+    echo "error: the number of processors used to compile must be a positive number"
+    exit 1
+fi
+
+if test -n "${PUBLISH_DIR}"
+then
+    if test ! -d "${PUBLISH_DIR}"
+    then
+        echo "error: the --publish-dir \"${PUBLISH_DIR}\" must be an existing directory."
+        exit 1
+    fi
+
+    # if it exists, make sure it is writable, otherwise the publication
+    # will fail and you probably want to fix that early on
+    # (since we are running with -e, the script fails on its own)
+    #
+    touch "${PUBLISH_DIR}/writable"
+    rm "${PUBLISH_DIR}/writable"
+
+    if test -d "${PUBLISH_DIR}/${PROJECT_NAME}/${PROJECT_NAME}-${VERSION}"
+    then
+        echo "warning: a published directory with the current version of ${PROJECT_NAME} already exists:"
+        echo "warning:"
+        echo "warning:     ${PUBLISH_DIR}/${PROJECT_NAME}/${PROJECT_NAME}-${VERSION}"
+        echo "warning:"
+        echo "warning: maybe you forgot to bump the version before running the coverage?"
+        echo "warning:"
+        echo -e "warning: do you want to overwrite it? (y/[N]) \c"
+        read ANSWER
+        if test "${ANSWER}" != "y" -a "${ANSWER}" != "Y"
+        then
+            echo "error: coverage process aborted."
+            exit 1
+        fi
+    fi
+fi
+
+
+
+#
+# PREPARE PROJECT
+#
+
+START_DATE=`date`
+echo "***"
+echo "*** ${PROJECT_NAME} coverage for version ${VERSION} (${START_DATE})"
+echo "***"
+mkdir -p tmp/coverage
+rm -rf tmp/coverage/*
+cd tmp/coverage
+mkdir BUILD
+MODULES="${DIST}/share/cmake-3.5/Modules;${DIST}/share/cmake"
+
+#
+# CONFIGURE PROJECT
+#
+
+# request coverage in this build
+cd BUILD
+cmake -DCMAKE_INSTALL_PREFIX:PATH="${DIST}" \
+    -DCMAKE_PREFIX_PATH:PATH="${DIST}" \
+    -DCMAKE_MODULE_PATH:PATH="${MODULES}" \
+    -DCMAKE_BUILD_TYPE=Debug \
+    -DSANITIZE:BOOL=ON \
+    -DCOVERAGE:BOOL=ON \
+        ../../.. 2>&1 | tee -a cmake_log.txt; test ${PIPESTATUS[0]} -eq 0
+cd ..
+
+
+#
+# BUILD PROJECT
+#
+
+echo
+echo "***"
+echo "*** compile (`date`)"
+echo "***"
+VERBOSE=1 make -j ${PROCESSORS} -C BUILD 2>&1 | tee -a build_log.txt; test ${PIPESTATUS[0]} -eq 0
+
+
+
+#
+# RUN TESTS
+#
+
+echo
+echo "***"
+echo "*** run (`date`)"
+echo "***"
+
+# First we verify the version to make sure that works as expected
+if test `BUILD/tests/unittest --version` != "${VERSION}"
+then
+    echo "the version of unittest (`BUILD/tests/unittest --version`) is not equal to the project version (${VERSION})"
+    exit 1
+fi
+
+# We test the pipe status on exit to detect whether the test failed
+echo "Start running the tests on `date`" >test_log.txt
+echo >>test_log.txt
+BUILD/tests/unittest ${ARGS} ${TESTS} 2>&1 | tee -a test_log.txt; test ${PIPESTATUS[0]} -eq 0
+echo >>test_log.txt
+echo "Finished running the tests on `date`" >>test_log.txt
+
+
+
+#
+# COMPUTE COVERAGE
+#
+
+echo
+echo "***"
+echo "*** lcov (`date`)"
+echo "***"
+
+lcov \
+    --capture \
+    --no-external \
+    --directory BUILD \
+    --base-directory "${SOURCE}" \
+    --output-file coverage.info
+
+
+
+#
+# OUTPUT RESULTS
+#
+
+mkdir -p html
+genhtml \
+    --legend \
+    --demangle-cpp \
+    --no-branch-coverage \
+    --show-details coverage.info \
+    --output-directory html
+
+
+END_DATE=`date`
+
+# Statistics
+echo "<html><head><title>${PROJECT_NAME} $VERSION statistics</title></head><body>" >html/statistics.html
+echo "<h3>Statistics of the ${PROJECT_NAME} $VERSION library</h3><pre>" >>html/statistics.html
+cloc $SOURCE/${PROJECT_NAME}/ >>html/statistics.html
+echo "</pre><h3>Statistics of the ${PROJECT_NAME} $VERSION tests</h3><pre>" >>html/statistics.html
+cloc $SOURCE/tests/ >>html/statistics.html
+#echo "</pre><h3>Statistics of ${PROJECT_NAME} tools $VERSION</h3><pre>" >>html/statistics.html
+#cloc $SOURCE/tools/ >>html/statistics.html
+echo "</pre></body></html>" >>html/statistics.html
+
+# CMake output (Logs)
+echo "<html><head><title>${PROJECT_NAME} $VERSION test logs</title></head><body><h3>Logs for the ${PROJECT_NAME} $VERSION cmake generator</h3><p>Tests started on ${START_DATE} and finished on ${END_DATE}</p><pre>" >html/cmake_log.html
+if test -f cmake_log.txt
+then
+    cat cmake_log.txt >>html/cmake_log.html
+fi
+echo "</pre></body></html>" >>html/cmake_log.html
+
+# Build output (Logs)
+echo "<html><head><title>${PROJECT_NAME} $VERSION test logs</title></head><body><h3>Logs for the ${PROJECT_NAME} $VERSION build process</h3><p>Tests started on ${START_DATE} and finished on ${END_DATE}</p><pre>" >html/build_log.html
+if test -f build_log.txt
+then
+    cat build_log.txt >>html/build_log.html
+fi
+echo "</pre></body></html>" >>html/build_log.html
+
+# Test output (Logs)
+echo "<html><head><title>${PROJECT_NAME} $VERSION test logs</title></head><body><h3>Logs for the ${PROJECT_NAME} $VERSION tests</h3><p>Tests started on ${START_DATE} and finished on ${END_DATE}</p><pre>" >html/test_log.html
+if test -f test_log.txt
+then
+    cat test_log.txt >>html/test_log.html
+fi
+echo "</pre></body></html>" >>html/test_log.html
+
+
+
+#
+# PUBLISH RESULTS
+#
+
+# For publication, if that directory does not exist, you probably don't
+# have a website to display this data
+if test -z "${TESTS}" -a -d ${PUBLISH_DIR}
+then
+    echo "***"
+    echo "*** publication to lcov.snapwebsites.org/${PROJECT_NAME} (${END_DATE})"
+    echo "***"
+
+    # Create folder for this specific version
+    mkdir -p ${PUBLISH_DIR}/${PROJECT_NAME}/${PROJECT_NAME}-$VERSION
+
+    # Make sure we have the latest index
+    cp $SOURCE/dev/index.php ${PUBLISH_DIR}/${PROJECT_NAME}/.
+
+    # Copy coverage and statistics HTML results
+    cp -r html/* ${PUBLISH_DIR}/${PROJECT_NAME}/${PROJECT_NAME}-$VERSION/.
+fi
+
+
+#
+# DONE
+#
+
+echo "Process started  on ${START_DATE}"
+echo "Process finished on ${END_DATE}"
+
+# vim: ts=4 sw=4 et

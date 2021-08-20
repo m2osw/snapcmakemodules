@@ -70,8 +70,9 @@ set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -fdiagnostics-color -Werror 
 set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wall -Wextra -Wunused-parameter -fwrapv" )
 
 if( "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" )
-    option( SANITIZE_OPTIONS "Sanitize addresses, enumerations, unreachable code for ${PROJECT_NAME}. Debug mode only." OFF )
-    if( ${SANITIZE_OPTIONS} )
+    option( SANITIZE "Sanitize addresses, enumerations, unreachable code for ${PROJECT_NAME}. Debug mode only." OFF )
+    if( ${SANITIZE} )
+        message("*** SANITIZE TURNED ON ***")
         set( SANITIZE_SWITCH "-fsanitize=address -fsanitize=enum -fsanitize=unreachable" )
     endif()
 endif()
@@ -109,14 +110,14 @@ else()
     message( WARNING "You may have problems trying to compile this code on non-*nix platforms." )
 endif()
 
-# To generate coverage, use -D<project name>_COVERAGE=ON
-#                       and -DCMAKE_BUILD_TYPE=Debug
-option( ${PROJECT_NAME}_COVERAGE "Turn on coverage for ${PROJECT_NAME}." OFF )
 
 # Make sure we use RPATH instead of RUNPATH
 set( CMAKE_EXE_LINKER_FLAGS "${CMAKE_EXE_LINKER_FLAGS} -Wl,--disable-new-dtags" )
 
-if( ${${PROJECT_NAME}_COVERAGE} )
+# To generate coverage, use -DCOVERAGE:BOOL=ON
+#                       and -DCMAKE_BUILD_TYPE=Debug
+option( COVERAGE "Turn on coverage for ${PROJECT_NAME}." OFF )
+if( ${COVERAGE} )
 	message("*** COVERAGE TURNED ON ***")
 	find_program( COV gcov )
 	if( ${COV} STREQUAL "COV-NOTFOUND" )
