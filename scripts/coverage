@@ -238,7 +238,10 @@ echo
 echo "***"
 echo "*** compile (`date`)"
 echo "***"
-VERBOSE=1 make -j ${PROCESSORS} -C BUILD 2>&1 | tee -a build_log.txt; test ${PIPESTATUS[0]} -eq 0
+VERBOSE=1 make \
+        -j ${PROCESSORS} \
+        -C BUILD \
+            2>&1 | tee -a build_log.txt; test ${PIPESTATUS[0]} -eq 0
 
 
 
@@ -259,9 +262,19 @@ then
 fi
 
 # We test the pipe status on exit to detect whether the test failed
+#
+# The "--warn NoTests" forces exit(1) if no tests run.
+# PROJECT_COVERAGE_ARGS is defined in the `mk` script of the project.
+# ARGS is defined after --args, it defaults to --progress
+# TESTS is defined after --test, more than one name can be specified.
+#
 echo "Start running the tests on `date`" >test_log.txt
 echo >>test_log.txt
-BUILD/tests/unittest ${ARGS} ${TESTS} 2>&1 | tee -a test_log.txt; test ${PIPESTATUS[0]} -eq 0
+BUILD/tests/unittest \
+    --warn NoTests \
+    ${PROJECT_COVERAGE_ARGS} \
+    ${ARGS} \
+    ${TESTS} 2>&1 | tee -a test_log.txt; test ${PIPESTATUS[0]} -eq 0
 echo >>test_log.txt
 echo "Finished running the tests on `date`" >>test_log.txt
 
@@ -284,7 +297,6 @@ lcov \
     --output-file coverage.info
 
 
-
 #
 # OUTPUT RESULTS
 #
@@ -298,10 +310,30 @@ genhtml \
     --output-directory html
 
 
+#
+# COMPUTER PROFILING
+#
+
+gprof \
+    --min-count=5 \
+    BUILD/tests/unittest \
+    gmon.out | \
+        txt2html \
+            --preformat_trigger_lines 0 \
+            --title "Profiling of ${PROJECT_NAME} v${VERSION}" \
+                >html/profiler.html
+
+#echo "<html><head><title>Profiling of ${PROJECT_NAME} v${VERSION}</title></head><body>" >html/profiler.html
+#echo "<h3>Profiling of ${PROJECT_NAME} v${VERSION}</h3><pre>" >>html/profiler.html
+#txt2html analysis.txt >>html/profiler.html
+#echo "</pre>" >>html/profiler.html
+
+
+
 END_DATE=`date`
 
 # Statistics
-echo "<html><head><title>${PROJECT_NAME} $VERSION statistics</title></head><body>" >html/statistics.html
+echo "<html><head><title>${PROJECT_NAME} ${VERSION} statistics</title></head><body>" >html/statistics.html
 
 if test -d $SOURCE/${PROJECT_NAME}
 then

@@ -47,6 +47,7 @@ echo "<html><head><title>@PROJECT_NAME@ coverage</title></head>",
     "<table border=\"1\" cellpadding=\"10\" cellspacing=\"0\">",
     "<thead><tr>",
         "<th>Coverage</th>",
+        "<th>Profiling</th>",
         "<th>CMake</th>",
         "<th>Build</th>",
         "<th>Test</th>",
@@ -59,6 +60,7 @@ foreach($dir as $d)
 
         echo "<td><a href=\"", $d, "\">", $d, "</a></td>";
 
+        out($d, "profiler.html", "gprof");
         out($d, "cmake_log.html", "log");
         out($d, "build_log.html", "log");
         out($d, "test_log.html", "log");
@@ -67,6 +69,6 @@ foreach($dir as $d)
     echo "</tr>";
 }
 
-echo "</tbody></table></body></html>";
+echo "</tbody></table><p><a href=\"..\">Back to list of projects</a></body></html>";
 
 # vim: ts=4 sw=4 et
