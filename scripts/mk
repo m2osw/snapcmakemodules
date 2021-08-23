@@ -44,12 +44,17 @@ LAUNCHPAD=false
 while test -n "${1}"
 do
 	case ${1} in
-	"--clean")
+	"--clean"|"-k")
 		shift
 		TARGET=clean
 		;;
 
 	"--coverage"|"-c")
+		if test ! -d tests
+		then
+			echo "error: no tests folder detected; option not available."
+			exit 1
+		fi
 		if test -x ../cmake/scripts/coverage
 		then
 			COVERAGE=../cmake/scripts/coverage
@@ -78,43 +83,44 @@ do
 		TYPE="Debug"
 		;;
 
-	"-h"|"--help")
+	"--help"|"-h")
 		echo "Usage: ${0} [-opts]"
 		echo "where -opts are:"
-		echo "  --coverage | -c        Run the tests to determine coverage."
-		echo "                         Use -t with -c to only run coverage for those tests."
-		echo "  --documentation | -d   Rebuild the documentation."
-		echo "  --debug | -g           Build the Debug version."
-		echo "  --help | -h            Print out this help screen."
-		echo "  --install | -i         Install once built."
-		echo "  --less | -l            Force output through less."
-		echo "  --packages | -b        Build packages on launchpad."
-		echo "  --processors | -p      Change the number of processors."
-		echo "  --release | -r         Build the Release version."
-		echo "  --sanitize | -s        Build the Sanitized version."
-		echo "  --test | -t <name> ... Build and then run the tests."
-		echo "  --verbose | -v         Render the 'make' tool verbose."
-		echo "  --version              Current version of the project."
+		echo "  --clean | -k              Clean the output folder"
+		echo "  --coverage | -c           Run the tests to determine coverage."
+		echo "                            Use -t with -c to only run coverage for those tests."
+		echo "  --documentation | -d      Rebuild the documentation."
+		echo "  --debug | -g              Build the Debug version."
+		echo "  --help | -h               Print out this help screen."
+		echo "  --install | -i            Install once built."
+		echo "  --less | -l               Force output through less."
+		echo "  --packages | -b           Build packages on launchpad."
+		echo "  --processors | -p <count> Change the number of processors."
+		echo "  --release | -r            Build the Release version."
+		echo "  --sanitize | -s           Build the Sanitized version."
+		echo "  --test | -t [<name> ...]  Build and then run the tests."
+		echo "  --verbose | -v            Render the 'make' tool verbose."
+		echo "  --version                 Current version of the project."
 		exit 0
 		;;
 
-	"-i"|"--install")
+	"--install"|"-i")
 		shift
 		TARGET=install
 		;;
 
-	"-l"|"--less")
+	"--less"|"-l")
 		shift
 		LESS=true
 		;;
 
-	"-b"|"--packages")
+	"--packages"|"-b")
 		if test ! -d debian
 		then
 			echo "error: build on launchpad not available, debian folder not found."
 			exit 1
 		fi
-		read -p "Are you sure you are ready to build on Launchpad? y/[N] " answer
+		read -p "Are you sure you are ready to build on Launchpad? (y/[N]) " answer
 		if test "${answer}" != "y" -o "${answer}" != "Y"
 		then
 			echo "warning: the build was not approved."
@@ -123,23 +129,23 @@ do
 		LAUNCHPAD=true
 		;;
 
-	"-p"|"--processors")
+	"--processors"|"-p")
 		shift
 		PROCESSORS="${1}"
 		shift
 		;;
 
-	"-r"|"--release")
+	"--release"|"-r")
 		shift
 		TYPE="Release"
 		;;
 
-	"-s"|"--sanitize")
+	"--sanitize"|"-s")
 		shift
 		TYPE="Sanitize"
 		;;
 
-	"-t"|"--test")
+	"--test"|"-t")
 		if test ! -d tests
 		then
 			echo "error: no tests folder detected; option not available."
@@ -154,7 +160,7 @@ do
 		done
 		;;
 
-	"-v"|"--verbose")
+	"--verbose"|"-v")
 		shift
 		export VERBOSE=1
 		;;
@@ -200,6 +206,7 @@ then
 fi
 
 
+
 OUTPUT="${BUILD}/${TYPE}/${CONTRIBDIR}${PROJECT}"
 
 
@@ -230,10 +237,10 @@ then
 	then
 		if ${LESS}
 		then
-			${OUTPUT}/tests/unittest --progress ${TESTS} 2>&1 | less -SR
+			${OUTPUT}/tests/unittest ${PROJECT_TEST_ARGS} --progress ${TESTS} 2>&1 | less -SR
 			RESULT=${PIPESTATUS[0]}
 		else
-			${OUTPUT}/tests/unittest --progress ${TESTS}
+			${OUTPUT}/tests/unittest ${PROJECT_TEST_ARGS} --progress ${TESTS}
 			RESULT=${?}
 		fi
 	fi

@@ -272,7 +272,7 @@ echo "Start running the tests on `date`" >test_log.txt
 echo >>test_log.txt
 BUILD/tests/unittest \
     --warn NoTests \
-    ${PROJECT_COVERAGE_ARGS} \
+    ${PROJECT_TEST_ARGS} \
     ${ARGS} \
     ${TESTS} 2>&1 | tee -a test_log.txt; test ${PIPESTATUS[0]} -eq 0
 echo >>test_log.txt
