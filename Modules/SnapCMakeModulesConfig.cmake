@@ -69,8 +69,8 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DCMAKE_SOURCE_DIR='\"${CMAKE_SOURCE_DIR
 set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -fdiagnostics-color -Werror -Wall -Wextra -pedantic -Wcast-align -Wcast-qual -Wctor-dtor-privacy -Winit-self -Wlogical-op -Wmissing-include-dirs -Woverloaded-virtual -Wredundant-decls -Wshadow -Wsign-promo -Wstrict-null-sentinel -Wstrict-overflow=2 -Wundef -Wno-unused -Wunused-variable -Wno-variadic-macros -Wno-parentheses -Wno-unknown-pragmas -Wwrite-strings -Wswitch -Wunused-parameter -Wfloat-equal -Wnon-virtual-dtor -Weffc++ -Wdate-time -fdiagnostics-show-option -DQT_DISABLE_DEPRECATED_BEFORE=0x050501 -DQT_DEPRECATED_WARNINGS" )
 set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wall -Wextra -Wunused-parameter -fwrapv" )
 
+option( SANITIZE "Sanitize addresses, enumerations, unreachable code for ${PROJECT_NAME}. Debug mode only." OFF )
 if( "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" )
-    option( SANITIZE "Sanitize addresses, enumerations, unreachable code for ${PROJECT_NAME}. Debug mode only." OFF )
     if( ${SANITIZE} )
         message("*** SANITIZE TURNED ON ***")
         set( SANITIZE_SWITCH "-fsanitize=address -fsanitize=enum -fsanitize=unreachable" )
