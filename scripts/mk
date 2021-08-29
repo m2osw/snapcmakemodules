@@ -87,18 +87,33 @@ do
 		echo "Usage: ${0} [-opts]"
 		echo "where -opts are:"
 		echo "  --clean | -k              Clean the output folder"
-		echo "  --coverage | -c           Run the tests to determine coverage."
-		echo "                            Use -t with -c to only run coverage for those tests."
+
+		if test -d tests
+		then
+			echo "  --coverage | -c           Run the tests to determine coverage."
+			echo "                            Use -t with -c to only run coverage for those tests."
+		fi
+
 		echo "  --documentation | -d      Rebuild the documentation."
 		echo "  --debug | -g              Build the Debug version."
 		echo "  --help | -h               Print out this help screen."
 		echo "  --install | -i            Install once built."
 		echo "  --less | -l               Force output through less."
-		echo "  --packages | -b           Build packages on launchpad."
+
+		if test -d debian
+		then
+			echo "  --packages | -b           Build packages on launchpad."
+		fi
+
 		echo "  --processors | -p <count> Change the number of processors."
 		echo "  --release | -r            Build the Release version."
 		echo "  --sanitize | -s           Build the Sanitized version."
-		echo "  --test | -t [<name> ...]  Build and then run the tests."
+
+		if test -d tests
+		then
+			echo "  --test | -t [<name> ...]  Build and then run the tests."
+		fi
+
 		echo "  --verbose | -v            Render the 'make' tool verbose."
 		echo "  --version                 Current version of the project."
 		exit 0
