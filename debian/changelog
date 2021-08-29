@@ -1,3 +1,9 @@
+snapcmakemodules (1.0.59.0~bionic) bionic; urgency=high
+
+  * Hide menu items not available in ./mk script.
+
+ -- Alexis Wilke <alexis@m2osw.com>  Sat, 28 Aug 2021 18:07:39 -0700
+
 snapcmakemodules (1.0.58.0~bionic) bionic; urgency=high
 
   * Updated the mk script to handle coverage as well (-c/--coverage).
