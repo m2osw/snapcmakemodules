@@ -223,6 +223,7 @@ fi
 
 
 OUTPUT="${BUILD}/${TYPE}/${CONTRIBDIR}${PROJECT}"
+PROJECT_TMPDIR="${BUILD}/${TYPE}/${CONTRIBDIR}${PROJECT}/tmp"
 
 
 if ${DOCS}
@@ -252,10 +253,10 @@ then
 	then
 		if ${LESS}
 		then
-			${OUTPUT}/tests/unittest ${PROJECT_TEST_ARGS} --progress ${TESTS} 2>&1 | less -SR
+			${OUTPUT}/tests/unittest --tmp-dir "${PROJECT_TMPDIR}" ${PROJECT_TEST_ARGS} --progress ${TESTS} 2>&1 | less -SR
 			RESULT=${PIPESTATUS[0]}
 		else
-			${OUTPUT}/tests/unittest ${PROJECT_TEST_ARGS} --progress ${TESTS}
+			${OUTPUT}/tests/unittest --tmp-dir "${PROJECT_TMPDIR}" ${PROJECT_TEST_ARGS} --progress ${TESTS}
 			RESULT=${?}
 		fi
 	fi
