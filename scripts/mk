@@ -170,7 +170,11 @@ do
 		TEST=true
 		while [[ "${1}" != "" && "${1}" != "-"* ]]
 		do
-			TESTS="${TESTS} ${1}"
+			if test -n "${TESTS}"
+			then
+				TESTS="${TESTS},"
+			fi
+			TESTS="${TESTS}${1}"
 			shift
 		done
 		;;
