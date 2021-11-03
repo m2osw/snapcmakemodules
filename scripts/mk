@@ -39,6 +39,7 @@ DOCS=false
 COVERAGE=
 TEST=false
 TESTS="${TEST_OPTIONS}"		# TEST_OPTIONS can be defined by the project to add default options to always use along the unittest
+TEST_SEED=
 LAUNCHPAD=false
 
 # Retrieve the user default PROCESSORS=... variable
@@ -117,6 +118,7 @@ do
 
 		if test -d tests
 		then
+			echo "  --seed <seed>             Define the seed."
 			echo "  --test | -t [<name> ...]  Build and then run the tests."
 		fi
 
@@ -164,6 +166,12 @@ do
 	"--sanitize"|"-s")
 		shift
 		TYPE="Sanitize"
+		;;
+
+	"--seed")
+		shift
+		TEST_SEED="--seed $1"
+		shift
 		;;
 
 	"--test"|"-t")
@@ -221,7 +229,6 @@ then
 		exit 1
 	fi
 
-	rm -rf tmp/coverage
 	rmdir --ignore-fail-on-non-empty tmp
 
 	# Also delete the docs so they get rebuilt too
@@ -263,10 +270,10 @@ then
 	then
 		if ${LESS}
 		then
-			${OUTPUT}/tests/unittest --tmp-dir "${PROJECT_TMPDIR}" ${PROJECT_TEST_ARGS} --progress ${TESTS} 2>&1 | less -SR
+			${OUTPUT}/tests/unittest --tmp-dir "${PROJECT_TMPDIR}" ${PROJECT_TEST_ARGS} ${TEST_SEED} --progress ${TESTS} 2>&1 | less -SR
 			RESULT=${PIPESTATUS[0]}
 		else
-			${OUTPUT}/tests/unittest --tmp-dir "${PROJECT_TMPDIR}" ${PROJECT_TEST_ARGS} --progress ${TESTS}
+			${OUTPUT}/tests/unittest --tmp-dir "${PROJECT_TMPDIR}" ${PROJECT_TEST_ARGS} ${TEST_SEED} --progress ${TESTS}
 			RESULT=${?}
 		fi
 	fi
