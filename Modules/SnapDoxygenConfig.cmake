@@ -51,6 +51,8 @@ find_package( Doxygen )
 # and patch.
 #
 function( AddDoxygenTarget TARGET_NAME VERSION_MAJOR VERSION_MINOR VERSION_PATCH )
+    cmake_parse_arguments(PARSE_ARGV 4 ADD_DOXY "QUIET" "" "")
+
     project( ${TARGET_NAME}_Documentation )
 
     set( VERSION "${VERSION_MAJOR}.${VERSION_MINOR}" )
@@ -85,7 +87,9 @@ function( AddDoxygenTarget TARGET_NAME VERSION_MAJOR VERSION_MINOR VERSION_PATCH
                 DESTINATION share/doc/${LOWER_TARGET_NAME}/html/
         )
     else()
-        message( WARNING "You do not seem to have doxygen installed on this system, no documentation will be generated." )
+        if(NOT ADD_DOXY_QUIET)
+            message( WARNING "You do not seem to have doxygen installed on this system, no documentation will be generated." )
+        endif()
     endif()
 endfunction()
 
