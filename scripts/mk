@@ -268,6 +268,7 @@ then
 		RESULT=${?}
 	elif ${TEST}
 	then
+		echo "${OUTPUT}/tests/unittest --tmp-dir "${PROJECT_TMPDIR}" ${PROJECT_TEST_ARGS} ${TEST_SEED} --progress ${TESTS}"
 		if ${LESS}
 		then
 			${OUTPUT}/tests/unittest --tmp-dir "${PROJECT_TMPDIR}" ${PROJECT_TEST_ARGS} ${TEST_SEED} --progress ${TESTS} 2>&1 | less -SR
