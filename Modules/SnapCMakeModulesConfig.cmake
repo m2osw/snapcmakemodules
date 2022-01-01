@@ -165,6 +165,8 @@ function( SnapGetVersion PACKAGE_NAME WORKING_DIRECTORY )
         message( FATAL_ERROR "dpkg-parsechangelog not found! Is dpkg-dev installed?" )
     endif()
 
+    set_property(DIRECTORY APPEND PROPERTY CMAKE_CONFIGURE_DEPENDS debian/changelog)
+
     execute_process(
         COMMAND ${DPKG_PARSECHANGELOG} -S Version
         WORKING_DIRECTORY ${WORKING_DIRECTORY}

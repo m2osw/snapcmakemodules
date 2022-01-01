@@ -1,3 +1,9 @@
+snapcmakemodules (1.0.61.0~bionic) bionic; urgency=high
+
+  * Added a dependency on debian/changelog for the version gathering.
+
+ -- Alexis Wilke <alexis@m2osw.com>  Sat, 01 Jan 2022 12:01:09 -0800
+
 snapcmakemodules (1.0.60.0~bionic) bionic; urgency=high
 
   * Properly handle the SANITIZE option in the main cmake files.
