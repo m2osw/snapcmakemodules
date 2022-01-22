@@ -42,7 +42,7 @@ TESTS="${TEST_OPTIONS}"		# TEST_OPTIONS can be defined by the project to add def
 TEST_SEED=
 LAUNCHPAD=false
 
-# Retrieve the user default PROCESSORS=... variable
+# Retrieve the user default PROCESSORS=... and other variables
 if test -f ~/.build-snap.rc
 then
 	. ~/.build-snap.rc
@@ -120,6 +120,9 @@ do
 		then
 			echo "  --seed <seed>             Define the seed."
 			echo "  --test | -t [<name> ...]  Build and then run the tests."
+			echo "                            Tests names can be written separated by commas"
+			echo "                            in which case you cannot include any spaces:"
+			echo "                               -t a b c   or   -t a,b,c"
 		fi
 
 		echo "  --verbose | -v            Render the 'make' tool verbose."
@@ -144,11 +147,12 @@ do
 			exit 1
 		fi
 		read -p "Are you sure you are ready to build on Launchpad? (y/[N]) " answer
-		if test "${answer}" != "y" -o "${answer}" != "Y"
+		if test "${answer}" != "y" -a "${answer}" != "Y"
 		then
 			echo "warning: the build was not approved."
 			exit 1
 		fi
+		shift
 		LAUNCHPAD=true
 		;;
 
@@ -229,7 +233,10 @@ then
 		exit 1
 	fi
 
-	rmdir --ignore-fail-on-non-empty tmp
+	if test -d tmp
+	then
+		rmdir --ignore-fail-on-non-empty tmp
+	fi
 
 	# Also delete the docs so they get rebuilt too
 	# (I know the last test above is contradictory...)
