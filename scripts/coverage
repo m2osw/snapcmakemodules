@@ -280,7 +280,8 @@ fi
 
 # We test the pipe status on exit to detect whether the test failed
 #
-# The "--warn NoTests" forces exit(1) if no tests run.
+# The "--warn UnmatchedTestSpec" forces exit(1) if no tests ran.
+# The "--warn NoAssertions" forces exit(1) if a section has no assertions.
 # PROJECT_COVERAGE_ARGS is defined in the `mk` script of the project.
 # ARGS is defined after --args, it defaults to --progress
 # TESTS is defined after --test, more than one name can be specified.
@@ -291,7 +292,8 @@ set -x
 BUILD/tests/unittest \
     --source-dir "${SOURCE}" \
     --tmp-dir "${PROJECT_BINDIR}/tmp" \
-    --warn NoTests \
+    --warn NoAssertions \
+    --warn UnmatchedTestSpec \
     ${PROJECT_TEST_ARGS} \
     ${ARGS} \
     ${TESTS} 2>&1 | tee -a test_log.txt; test ${PIPESTATUS[0]} -eq 0
