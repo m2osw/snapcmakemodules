@@ -1,3 +1,14 @@
+snapcmakemodules (1.0.62.0~bionic) bionic; urgency=high
+
+  * Enhanced the coverage script (rmdir tmp, --source-dir, echo cmd).
+  * Moved the tmp & coverage directories to the BUILD directory.
+  * Offer a QUIET mode for Doxygen so by default we ignore the missing package.
+  * Handle the PROCESSOR variable instead of just `nproc`.
+  * Updated to work with Catch2 version 3.
+  * Bumped copyright notice to 2022.
+
+ -- Alexis Wilke <alexis@m2osw.com>  Sun, 30 Jan 2022 18:09:42 -0800
+
 snapcmakemodules (1.0.61.0~bionic) bionic; urgency=high
 
   * Added a dependency on debian/changelog for the version gathering.
