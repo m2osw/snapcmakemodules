@@ -261,7 +261,7 @@ fi
 if ${LESS}
 then
 	make -j${PROCESSORS} -C ${OUTPUT} ${TARGET} 2>&1 | less -SR
-	RESULT=${?}
+	RESULT=${PIPESTATUS[0]}
 else
 	make -j${PROCESSORS} -C ${OUTPUT} ${TARGET}
 	RESULT=${?}
