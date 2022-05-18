@@ -452,7 +452,7 @@ function( CreateTargets COMPONENT )
 
         file(APPEND "${CMAKE_BINARY_DIR}/deps.make" "\n")
         execute_process(
-            COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/cmake/scripts/simplify-dependencies.py < ${CMAKE_BINARY_DIR}/deps.make | tee ${CMAKE_BINARY_DIR}/clean-dependencies.dot | dot -Tsvg >${CMAKE_BINARY_DIR}/clean-dependencies.svg
+            COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/cmake/scripts/simplify-dependencies.py ${CMAKE_BINARY_DIR}
             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
             OUTPUT_FILE "${CMAKE_BINARY_DIR}/clean-dependencies.svg")
     else()

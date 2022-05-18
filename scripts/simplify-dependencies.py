@@ -10,6 +10,9 @@ Usage: simplify-dependencies.py < deps.make > dependencies.dot
 This script probably uses several features of Python 3.x.
 '''
 
+import argparse
+import os
+
 class UnexpectedInput(Exception):
     pass
 
@@ -38,11 +41,10 @@ class Project(object):
         if d in self._dependencies:
             self._dependencies.remove(d)
 
-def load_projects():
+def load_projects(path):
     projects = []
-    try:
-        while True:
-            line = input()
+    with open(path + '/deps.make') as f:
+        for line in f:
             line = line.strip()
             if len(line) == 0:
                 continue
@@ -55,8 +57,6 @@ def load_projects():
             if len(target_deps) > 1:
                 deps = target_deps[1].split()
             projects.append(Project(target_deps[0], deps))
-    except EOFError:
-        pass
 
     return projects
 
@@ -101,16 +101,24 @@ def output_dot(projects):
     return output
 
 def main():
-    #for description in __doc__.splitlines():
-    #    if description:
-    #        break
-    #parser = argparse.ArgumentParser(description=description)
-    #parser.add_argument('-d', '--deps', action='store_true', help='specify the input filename to work with')
+    for description in __doc__.splitlines():
+        if description:
+            break
+    parser = argparse.ArgumentParser(description=description)
+    parser.add_argument('workdir', metavar='<working directory>', nargs='*', help='location of the deps.make and were we save the output')
+    options = parser.parse_args()
+    if len(options.workdir) != 1:
+        raise NotFound
+    output_path = options.workdir[0]
 
-    projects = load_projects()
+    projects = load_projects(output_path)
     simplify_projects(projects)
     output = output_dot(projects)
-    print(output)
+
+    with open(output_path + '/clean-dependencies.dot', 'w') as f:
+        f.write(output)
+
+    os.system('dot -Tsvg <' + output_path + '/clean-dependencies.dot >' + output_path + '/clean-dependencies.svg')
 
 if __name__ == '__main__':
     main()
