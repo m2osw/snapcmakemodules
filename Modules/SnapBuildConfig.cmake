@@ -381,13 +381,6 @@ function( ConfigureMakeProject )
     endif()
     separate_arguments(DEPENDS_LIST)
 
-    if(NOT EXISTS "${CMAKE_BINARY_DIR}/deps.dot")
-        file(WRITE "${CMAKE_BINARY_DIR}/deps.dot" "digraph dependencies {\n")
-    endif()
-    foreach( DEP ${DEPENDS_LIST} )
-        file(APPEND "${CMAKE_BINARY_DIR}/deps.dot" "\"${ARG_PROJECT_NAME}\" [shape=box];\n\"${ARG_PROJECT_NAME}\" -> \"${DEP}\";\n")
-    endforeach()
-
     if(NOT EXISTS "${CMAKE_BINARY_DIR}/deps.make")
         file(WRITE "${CMAKE_BINARY_DIR}/deps.make" "# skeleton Makefile showing build dependencies\n")
     endif()
@@ -455,29 +448,11 @@ function( CreateTargets COMPONENT )
     get_property( REPREPRO_TARGETS GLOBAL PROPERTY REPREPRO_TARGETS )
 
     if( ${COMPONENT} STREQUAL "top" )
-        unset( COMP_SUFFIX )
+        unset(COMP_SUFFIX)
 
         file(APPEND "${CMAKE_BINARY_DIR}/deps.make" "\n")
-        file(APPEND "${CMAKE_BINARY_DIR}/deps.dot" "}\n")
-
-        # We change the name of the deps.dot file so next time the
-        # configuration runs it generates a brand new file
-        #
-        file(RENAME "${CMAKE_BINARY_DIR}/deps.dot" "${CMAKE_BINARY_DIR}/dependencies.dot")
         execute_process(
-            COMMAND dot -Tsvg ${CMAKE_BINARY_DIR}/dependencies.dot
-            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-            OUTPUT_FILE "${CMAKE_BINARY_DIR}/dependencies.svg")
-
-        # The main dependencies.svg shows all the dependencies, which makes the
-        # graph very crowded, here we create another version cleaned up with
-        # the (nearly) minimal number of links
-        #
-        execute_process(
-            COMMAND gvpr -o ${CMAKE_BINARY_DIR}/clean-dependencies.dot -f ${CMAKE_CURRENT_SOURCE_DIR}/cmake/Modules/clean-dependencies.gvpr ${CMAKE_BINARY_DIR}/dependencies.dot
-            WORKING_DIRECTORY ${CMAKE_BINARY_DIR})
-        execute_process(
-            COMMAND dot -Tsvg ${CMAKE_BINARY_DIR}/clean-dependencies.dot
+            COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/cmake/scripts/simplify-dependencies.py < ${CMAKE_BINARY_DIR}/deps.make | tee ${CMAKE_BINARY_DIR}/clean-dependencies.dot | dot -Tsvg >${CMAKE_BINARY_DIR}/clean-dependencies.svg
             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
             OUTPUT_FILE "${CMAKE_BINARY_DIR}/clean-dependencies.svg")
     else()
