@@ -29,17 +29,17 @@ class Project(object):
     def get_name(self):
         return self._name
 
-    def get_safe_name(self):
-        if '-' in self._name:
-            return '"' + self._name + '"'
-        return self._name
-
     def get_deps(self):
         return self._dependencies
 
     def remove_dep(self, d):
         if d in self._dependencies:
             self._dependencies.remove(d)
+
+def safe_name(name):
+  if '-' in name:
+    return '"' + name + '"'
+  return name
 
 def load_projects(path):
     projects = []
@@ -84,7 +84,7 @@ def output_dot(projects):
     output += 'digraph dependencies {\n'
     for p in projects:
         output += '    '
-        output += p.get_safe_name()
+        output += safe_name(p.get_name())
         if len(p.get_deps()) > 0:
             output += ' [shape=box];\n'
         else:
@@ -93,9 +93,9 @@ def output_dot(projects):
         deps = p.get_deps()
         for d in deps:
             output += '    '
-            output += p.get_safe_name()
+            output += safe_name(p.get_name())
             output += ' -> '
-            output += d
+            output += safe_name(d)
             output += ';\n'
     output += '}\n'
     return output
