@@ -31,12 +31,10 @@ install(
 
 set(MODULES_LIST
     CassandraCppDriver
-    Catch
     CppUnit
     DumpCMakeVariables
     ICU
     LibEvent
-    log4cplus
     Magic
     ProcPS
     LibQREncode
