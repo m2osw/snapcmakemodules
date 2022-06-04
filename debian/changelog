@@ -1,3 +1,9 @@
+snapcmakemodules (1.0.65.0~bionic) bionic; urgency=high
+
+  * Install the CheckCXXAbstractClass module in the right directory.
+
+ -- Alexis Wilke <alexis@m2osw.com>  Sat, 04 Jun 2022 09:35:10 -0700
+
 snapcmakemodules (1.0.64.0~bionic) bionic; urgency=high
 
   * Fixed the compat version.

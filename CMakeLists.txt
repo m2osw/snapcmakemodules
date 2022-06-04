@@ -21,12 +21,14 @@ cmake_minimum_required(VERSION 3.5)
 
 project(snapCMakeModules)
 
+string(REPLACE "/usr/" "" SNAP_CMAKE_INSTALL_DIR "${CMAKE_ROOT}")
+
 install(
     FILES
         Modules/CheckCXXAbstractClass.cmake
 
     DESTINATION
-        share/cmake-3.5/Modules
+        ${SNAP_CMAKE_INSTALL_DIR}/Modules
 )
 
 set(MODULES_LIST
