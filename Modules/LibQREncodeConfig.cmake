@@ -1,6 +1,6 @@
 ################################################################################
 #
-# Copyright (c) 2011-2021  Made to Order Software Corp.  All Rights Reserved
+# Copyright (c) 2011-2022  Made to Order Software Corp.  All Rights Reserved
 #
 # http://snapwebsites.org/
 # contact@m2osw.com
