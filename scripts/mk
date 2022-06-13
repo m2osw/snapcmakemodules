@@ -275,13 +275,13 @@ then
 		RESULT=${?}
 	elif ${TEST}
 	then
-		echo "${OUTPUT}/tests/unittest --tmp-dir "${PROJECT_TMPDIR}" ${PROJECT_TEST_ARGS} ${TEST_SEED} --progress ${TESTS}"
+		echo "${OUTPUT}/tests/unittest --tmp-dir "${PROJECT_TMPDIR}" --source-dir "${SOURCE}" ${PROJECT_TEST_ARGS} ${TEST_SEED} --progress ${TESTS}"
 		if ${LESS}
 		then
-			${OUTPUT}/tests/unittest --tmp-dir "${PROJECT_TMPDIR}" ${PROJECT_TEST_ARGS} ${TEST_SEED} --progress ${TESTS} 2>&1 | less -SR
+			${OUTPUT}/tests/unittest --tmp-dir "${PROJECT_TMPDIR}" --source-dir "${SOURCE}" ${PROJECT_TEST_ARGS} ${TEST_SEED} --progress ${TESTS} 2>&1 | less -SR
 			RESULT=${PIPESTATUS[0]}
 		else
-			${OUTPUT}/tests/unittest --tmp-dir "${PROJECT_TMPDIR}" ${PROJECT_TEST_ARGS} ${TEST_SEED} --progress ${TESTS}
+			${OUTPUT}/tests/unittest --tmp-dir "${PROJECT_TMPDIR}" --source-dir "${SOURCE}" ${PROJECT_TEST_ARGS} ${TEST_SEED} --progress ${TESTS}
 			RESULT=${?}
 		fi
 	fi
