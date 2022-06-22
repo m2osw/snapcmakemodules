@@ -38,6 +38,7 @@ LESS=false
 DOCS=false
 COVERAGE=
 TEST=false
+TEST_DBG=false
 TESTS="${TEST_OPTIONS}"		# TEST_OPTIONS can be defined by the project to add default options to always use along the unittest
 TEST_SEED=
 LAUNCHPAD=false
@@ -123,6 +124,7 @@ do
 			echo "                            Tests names can be written separated by commas"
 			echo "                            in which case you cannot include any spaces:"
 			echo "                               -t a b c   or   -t a,b,c"
+			echo "  --tg [<name> ...]         Like --test but run the tests with the debugger."
 		fi
 
 		echo "  --verbose | -v            Render the 'make' tool verbose."
@@ -178,11 +180,15 @@ do
 		shift
 		;;
 
-	"--test"|"-t")
+	"--test"|"-t"|"--tg")
 		if test ! -d tests
 		then
 			echo "error: no tests folder detected; option not available."
 			exit 1
+		fi
+		if test "$1" = "--tg"
+		then
+			TEST_DBG=true
 		fi
 		shift
 		TEST=true
@@ -276,7 +282,13 @@ then
 	elif ${TEST}
 	then
 		echo "${OUTPUT}/tests/unittest --tmp-dir "${PROJECT_TMPDIR}" --source-dir "${SOURCE}" ${PROJECT_TEST_ARGS} ${TEST_SEED} --progress ${TESTS}"
-		if ${LESS}
+		if ${TEST_DBG}
+		then
+			gdb -ex 'run' --args ${OUTPUT}/tests/unittest --tmp-dir "${PROJECT_TMPDIR}" --source-dir "${SOURCE}" ${PROJECT_TEST_ARGS} ${TEST_SEED} --progress ${TESTS}
+
+			# the check of the result in this case is not quite relevant
+			exit 0
+		elif ${LESS}
 		then
 			${OUTPUT}/tests/unittest --tmp-dir "${PROJECT_TMPDIR}" --source-dir "${SOURCE}" ${PROJECT_TEST_ARGS} ${TEST_SEED} --progress ${TESTS} 2>&1 | less -SR
 			RESULT=${PIPESTATUS[0]}
