@@ -1,6 +1,6 @@
 # Copyright (c) 2011-2022  Made to Order Software Corp.  All Rights Reserved
 #
-# http://snapwebsites.org/
+# http://snapwebsites.org/project/snapcmakemodules
 # contact@m2osw.com
 #
 # This program is free software; you can redistribute it and/or modify
@@ -17,7 +17,7 @@
 # with this program; if not, write to the Free Software Foundation, Inc.,
 # 51 Franklin St, Fifth Floor, Boston, MA 02110-1301 USA
 
-cmake_minimum_required(VERSION 3.5)
+cmake_minimum_required(VERSION 3.10.2)
 
 project(snapCMakeModules)
 
