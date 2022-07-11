@@ -342,34 +342,34 @@ endfunction()
 #    set( COMPONENT ${COMPONENT} PARENT_SCOPE )
 #endfunction()
 
-function( ConfigureMakeProject )
-    set( options
+function(ConfigureMakeProject)
+    set(options
         USE_CONFIGURE_SCRIPT
     )
-    set( oneValueArgs
+    set(oneValueArgs
         PROJECT_NAME
         DISTFILE_PATH
         COMPONENT
     )
-    set( multiValueArgs
+    set(multiValueArgs
         CONFIG_ARGS
         DEPENDS
     )
-    cmake_parse_arguments( ARG
+    cmake_parse_arguments(ARG
         "${options}"
         "${oneValueArgs}"
         "${multiValueArgs}"
         ${ARGN}
     )
 
-    if( ARG_USE_CONFIGURE_SCRIPT )
-        set( CONF_SCRIPT_OPTION "USE_CONFIGURE_SCRIPT" )
+    if(ARG_USE_CONFIGURE_SCRIPT)
+        set(CONF_SCRIPT_OPTION "USE_CONFIGURE_SCRIPT")
     endif()
-    if( NOT ARG_COMPONENT )
-        message( FATAL_ERROR "You must specify COMPONENT (main, build, config, non-free, etc)!" )
+    if(NOT ARG_COMPONENT)
+        message(FATAL_ERROR "You must specify COMPONENT (main, build, config, non-free, etc)!")
     endif()
 
-    message( STATUS "Searching dependencies for project '${ARG_PROJECT_NAME}'")
+    message(STATUS "Searching dependencies for project '${ARG_PROJECT_NAME}'")
     execute_process(
         COMMAND ${FIND_DEPS_SCRIPT} ${DEP_CACHE_FILE} ${ARG_PROJECT_NAME}
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
@@ -377,17 +377,18 @@ function( ConfigureMakeProject )
         RESULT_VARIABLE RETURN_VALUE
     )
     if(NOT RETURN_VALUE EQUAL "0")
-        message( FATAL_ERROR "Gathering of project dependencies failed.")
+        message(FATAL_ERROR "Gathering of project dependencies failed.")
     endif()
     separate_arguments(DEPENDS_LIST)
 
     if(NOT EXISTS "${CMAKE_BINARY_DIR}/deps.make")
-        file(WRITE "${CMAKE_BINARY_DIR}/deps.make" "# skeleton Makefile showing build dependencies\n")
+        file(WRITE "${CMAKE_BINARY_DIR}/deps.make" "# skeleton Makefile showing build dependencies\n\n")
     endif()
-    file(APPEND "${CMAKE_BINARY_DIR}/deps.make" "\n${ARG_PROJECT_NAME}:")
-    foreach( DEP ${DEPENDS_LIST} )
+    file(APPEND "${CMAKE_BINARY_DIR}/deps.make" "${ARG_PROJECT_NAME}:")
+    foreach(DEP ${DEPENDS_LIST})
         file(APPEND "${CMAKE_BINARY_DIR}/deps.make" " ${DEP}")
     endforeach()
+    file(APPEND "${CMAKE_BINARY_DIR}/deps.make" "\n")
 
     set_property(
         GLOBAL PROPERTY ${ARG_PROJECT_NAME}_DEPENDS_LIST
@@ -413,11 +414,11 @@ function( ConfigureMakeProject )
         IGNORE_DEPS
     )
 
-    set_property( GLOBAL APPEND PROPERTY BUILD_TARGETS    ${ARG_PROJECT_NAME}          )
-    set_property( GLOBAL APPEND PROPERTY CLEAN_TARGETS    ${ARG_PROJECT_NAME}-clean    )
-    set_property( GLOBAL APPEND PROPERTY PACKAGE_TARGETS  ${ARG_PROJECT_NAME}-debuild  )
-    set_property( GLOBAL APPEND PROPERTY DPUT_TARGETS     ${ARG_PROJECT_NAME}-dput     )
-    set_property( GLOBAL APPEND PROPERTY PBUILDER_TARGETS ${ARG_PROJECT_NAME}-pbuilder )
+    set_property(GLOBAL APPEND PROPERTY BUILD_TARGETS    ${ARG_PROJECT_NAME}         )
+    set_property(GLOBAL APPEND PROPERTY CLEAN_TARGETS    ${ARG_PROJECT_NAME}-clean   )
+    set_property(GLOBAL APPEND PROPERTY PACKAGE_TARGETS  ${ARG_PROJECT_NAME}-debuild )
+    set_property(GLOBAL APPEND PROPERTY DPUT_TARGETS     ${ARG_PROJECT_NAME}-dput    )
+    set_property(GLOBAL APPEND PROPERTY PBUILDER_TARGETS ${ARG_PROJECT_NAME}-pbuilder)
 endfunction()
 
 function( BuildRepro COMPONENT )
@@ -450,7 +451,6 @@ function( CreateTargets COMPONENT )
     if( ${COMPONENT} STREQUAL "top" )
         unset(COMP_SUFFIX)
 
-        file(APPEND "${CMAKE_BINARY_DIR}/deps.make" "\n")
         execute_process(
             COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/cmake/scripts/simplify-dependencies.py ${CMAKE_BINARY_DIR}
             WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
