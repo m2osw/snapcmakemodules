@@ -222,7 +222,17 @@ mkdir -p "${PROJECT_BINDIR}/coverage"
 rm -rf "${PROJECT_BINDIR}/coverage/"*
 cd "${PROJECT_BINDIR}/coverage"
 mkdir BUILD
-MODULES="${DIST}/share/cmake-3.5/Modules;${DIST}/share/cmake"
+(
+    mkdir VERSION
+    cd VERSION
+    echo 'cmake_minimum_required(VERSION 3.10)' >CMakeLists.txt
+    echo 'string(REPLACE "/usr/" "" SNAP_CMAKE_MODULES_DIR "${CMAKE_ROOT}")' >>CMakeLists.txt
+    echo 'message("SNAP_CMAKE_MODULES_DIR=${SNAP_CMAKE_MODULES_DIR}")' >>CMakeLists.txt
+    cmake . >path.txt 2>&1
+)
+CMAKE_ROOT=`grep SNAP_CMAKE_MODULES_DIR VERSION/path.txt | sed -e 's/SNAP_CMAKE_MODULES_DIR=//'`
+MODULES="${DIST}/${CMAKE_ROOT}/Modules;${DIST}/share/cmake"
+
 
 #
 # CONFIGURE PROJECT

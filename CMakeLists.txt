@@ -32,16 +32,9 @@ install(
 )
 
 set(MODULES_LIST
-    CassandraCppDriver
-    CppUnit
     DumpCMakeVariables
-    ICU
-    LibEvent
     Magic
-    ProcPS
     LibQREncode
-    QxCppUnit
-    QxRunner
     SnapBuild
     SnapCMakeModules
     SnapDoxygen

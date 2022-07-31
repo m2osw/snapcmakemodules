@@ -180,7 +180,7 @@ function( ConfigureMakeProjectInternal )
         )
     endif()
     if( ARG_USE_CONFIGURE_SCRIPT )
-        set( CONFIGURE_TARGETS ${BUILD_DIR}/config.log  )
+        set( CONFIGURE_TARGETS ${BUILD_DIR}/config.log )
         add_custom_command(
             OUTPUT ${CONFIGURE_TARGETS}
             COMMAND ${BUILD_DIR}/configure --prefix=${SNAP_DIST_DIR} ${ARG_CONFIG_ARGS}
@@ -203,25 +203,42 @@ function( ConfigureMakeProjectInternal )
                 set( SANITIZE_OPT "-DSANITIZE:BOOL=TRUE" )
             endif()
         endif()
-        set( COMMAND_LIST
+
+        # Each package can have its own cmake modules (at this time I think
+        # there are none, but for future improvements...)
+        #
+        # We also add a path to where the cmakesnapwebsites project adds
+        # modules, that way include() works as expected
+        #
+        # We finally add the place where the <name>Config.cmake are added
+        #
+        # WARNING: the ';' character is the list item separator; since we
+        #          reinterpret it twice, we need to escape it properly
+        #          which in our case is twice at the moment
+        #
+        string(REPLACE "/usr/" "" SNAP_CMAKE_MODULES_DIR "${CMAKE_ROOT}")
+        set(SNAP_MODULE_PATHS "${SRC_DIR}/cmake/Modules\\\;${SNAP_DIST_DIR}/${SNAP_CMAKE_MODULES_DIR}/Modules\\\;${SNAP_DIST_DIR}/share/cmake")
+
+        set(COMMAND_LIST
             ${THE_CMAKE_COMMAND}
                 -G "${SNAP_CMAKE_GENERATOR}"
                 -DCMAKE_BUILD_TYPE=${BUILD_TYPE}
                 -DCMAKE_INSTALL_PREFIX:PATH="${SNAP_DIST_DIR}"
                 -DCMAKE_PREFIX_PATH:PATH="${SNAP_DIST_DIR}"
+                -DCMAKE_MODULE_PATH:PATH="${SNAP_MODULE_PATHS}"
                 ${SANITIZE_OPT}
                 ${ARG_CONFIG_ARGS}
                 ${SRC_DIR}
         )
-        set( CMD_FILE ${BUILD_DIR}/configure.cmd )
-        file( REMOVE ${CMD_FILE} )
-        file( APPEND ${CMD_FILE} "cd " ${BUILD_DIR} "\n" )
-        file( APPEND ${CMD_FILE} "rm -f CMakeCache.txt\n" )
-        foreach( line ${COMMAND_LIST} )
-            if( "${line}" STREQUAL "${SNAP_CMAKE_GENERATOR}")
-                file( APPEND ${CMD_FILE} "\"${SNAP_CMAKE_GENERATOR}\" \\\n" )
+        set(CMD_FILE ${BUILD_DIR}/configure.cmd)
+        file(REMOVE ${CMD_FILE})
+        file(APPEND ${CMD_FILE} "cd " ${BUILD_DIR} "\n")
+        file(APPEND ${CMD_FILE} "rm -f CMakeCache.txt\n")
+        foreach(line ${COMMAND_LIST})
+            if("${line}" STREQUAL "${SNAP_CMAKE_GENERATOR}")
+                file(APPEND ${CMD_FILE} "\"${SNAP_CMAKE_GENERATOR}\" \\\n")
             else()
-                file( APPEND ${CMD_FILE} ${line} " \\\n" )
+                file(APPEND ${CMD_FILE} "${line} \\\n")
             endif()
         endforeach()
         #
