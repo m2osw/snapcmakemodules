@@ -41,6 +41,7 @@ TEST=false
 TEST_DBG=false
 TESTS="${TEST_OPTIONS}"		# TEST_OPTIONS can be defined by the project to add default options to always use along the unittest
 TEST_SEED=
+CATCH_EXCEPTIONS=
 LAUNCHPAD=false
 
 # Retrieve the user default PROCESSORS=... and other variables
@@ -52,6 +53,11 @@ fi
 while test -n "${1}"
 do
 	case ${1} in
+	"--catch-exceptions")
+		shift
+		CATCH_EXCEPTIONS='-ex "catch throw"'
+		;;
+
 	"--clean"|"-k")
 		shift
 		TARGET=clean
@@ -284,7 +290,7 @@ then
 		echo "${OUTPUT}/tests/unittest --tmp-dir "${PROJECT_TMPDIR}" --source-dir "${SOURCE}" ${PROJECT_TEST_ARGS} ${TEST_SEED} --progress ${TESTS}"
 		if ${TEST_DBG}
 		then
-			gdb -ex 'run' --args ${OUTPUT}/tests/unittest --tmp-dir "${PROJECT_TMPDIR}" --source-dir "${SOURCE}" ${PROJECT_TEST_ARGS} ${TEST_SEED} --progress ${TESTS}
+			gdb ${CATCH_EXCEPTIONS} -ex 'run' --args ${OUTPUT}/tests/unittest --tmp-dir "${PROJECT_TMPDIR}" --source-dir "${SOURCE}" ${PROJECT_TEST_ARGS} ${TEST_SEED} --progress ${TESTS}
 
 			# the check of the result in this case is not quite relevant
 			exit 0
