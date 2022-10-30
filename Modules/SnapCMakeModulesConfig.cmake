@@ -105,7 +105,7 @@ if( ${CMAKE_SYSTEM_NAME} STREQUAL "Linux" )
     if(NOT(GCC_VERSION VERSION_LESS 7.0))
         # We now want c++17
         #set(CMAKE_CXX_STANDARD 17) -- this uses -std=c++1z on Ubuntu 18.04
-        set(CMAKE_CXX_FLAGS -std=gnu++17)
+        set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=gnu++17")
     endif()
 else()
     message( WARNING "You may have problems trying to compile this code on non-*nix platforms." )
