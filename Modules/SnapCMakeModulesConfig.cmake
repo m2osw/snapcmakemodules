@@ -66,14 +66,26 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DCMAKE_SOURCE_DIR='\"${CMAKE_SOURCE_DIR
 # TODO: Work on adding the following two additional warning captures
 #    -Wold-style-cast -Wnoexcept
 #
-set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdiagnostics-color -Werror -Wall -Wextra -pedantic -Wcast-align -Wcast-qual -Wctor-dtor-privacy -Winit-self -Wlogical-op -Wmissing-include-dirs -Woverloaded-virtual -Wredundant-decls -Wshadow -Wsign-promo -Wstrict-null-sentinel -Wstrict-overflow=2 -Wundef -Wno-unused -Wunused-variable -Wno-variadic-macros -Wno-parentheses -Wno-unknown-pragmas -Wwrite-strings -Wswitch -Wunused-parameter -Wfloat-equal -Wnon-virtual-dtor -Weffc++ -Wdate-time -fdiagnostics-show-option -DQT_DISABLE_DEPRECATED_BEFORE=0x050501 -DQT_DEPRECATED_WARNINGS" )
-set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wall -Wextra -Wunused-parameter -fwrapv" )
+set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdiagnostics-color -Werror -Wall -Wextra -pedantic -Wcast-align -Wcast-qual -Wctor-dtor-privacy -Winit-self -Wlogical-op -Wmissing-include-dirs -Woverloaded-virtual -Wredundant-decls -Wshadow -Wsign-promo -Wstrict-null-sentinel -Wstrict-overflow=2 -Wundef -Wno-unused -Wunused-variable -Wno-variadic-macros -Wno-parentheses -Wno-unknown-pragmas -Wwrite-strings -Wswitch -Wunused-parameter -Wfloat-equal -Wnon-virtual-dtor -Weffc++ -Wdate-time -fdiagnostics-show-option -DQT_DISABLE_DEPRECATED_BEFORE=0x050501 -DQT_DEPRECATED_WARNINGS")
+set(CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wall -Wextra -Wunused-parameter -fwrapv")
 
-option( SANITIZE "Sanitize addresses, enumerations, unreachable code for ${PROJECT_NAME}. Debug mode only." OFF )
-if( "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" )
-    if( ${SANITIZE} )
+
+# Super ugly hack!
+#
+# For some reason when we find_package() of Qt5X11Extras (and probably other
+# Qt5 packages), it insists on using the CXX11 standard compile options.
+#
+# Here I force it to empty so it has no side effects with all our own set of
+# flags. This is only tested on Ubuntu 18.04 and newer.
+#
+set(CMAKE_CXX11_STANDARD_COMPILE_OPTION "")
+
+
+option(SANITIZE "Sanitize addresses, enumerations, unreachable code for ${PROJECT_NAME}. Debug mode only." OFF)
+if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+    if(${SANITIZE})
         message("*** SANITIZE TURNED ON ***")
-        set( SANITIZE_SWITCH "-fsanitize=address -fsanitize=enum -fsanitize=unreachable" )
+        set(SANITIZE_SWITCH "-fsanitize=address -fsanitize=enum -fsanitize=unreachable")
     endif()
 endif()
 
@@ -143,10 +155,10 @@ include( FindPackageHandleStandardArgs )
 find_package_handle_standard_args(
     SnapCMakeModules
     DEFAULT_MSG
-    CMAKE_C_FLAGS
     CMAKE_CXX_FLAGS
     CMAKE_CXX_FLAGS_DEBUG
     CMAKE_CXX_FLAGS_RELEASE
+    CMAKE_C_FLAGS
 )
 
 
