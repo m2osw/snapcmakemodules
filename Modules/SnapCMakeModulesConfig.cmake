@@ -66,7 +66,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -DCMAKE_SOURCE_DIR='\"${CMAKE_SOURCE_DIR
 # TODO: Work on adding the following two additional warning captures
 #    -Wold-style-cast -Wnoexcept
 #
-set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -std=c++17 -fdiagnostics-color -Werror -Wall -Wextra -pedantic -Wcast-align -Wcast-qual -Wctor-dtor-privacy -Winit-self -Wlogical-op -Wmissing-include-dirs -Woverloaded-virtual -Wredundant-decls -Wshadow -Wsign-promo -Wstrict-null-sentinel -Wstrict-overflow=2 -Wundef -Wno-unused -Wunused-variable -Wno-variadic-macros -Wno-parentheses -Wno-unknown-pragmas -Wwrite-strings -Wswitch -Wunused-parameter -Wfloat-equal -Wnon-virtual-dtor -Weffc++ -Wdate-time -fdiagnostics-show-option -DQT_DISABLE_DEPRECATED_BEFORE=0x050501 -DQT_DEPRECATED_WARNINGS" )
+set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fdiagnostics-color -Werror -Wall -Wextra -pedantic -Wcast-align -Wcast-qual -Wctor-dtor-privacy -Winit-self -Wlogical-op -Wmissing-include-dirs -Woverloaded-virtual -Wredundant-decls -Wshadow -Wsign-promo -Wstrict-null-sentinel -Wstrict-overflow=2 -Wundef -Wno-unused -Wunused-variable -Wno-variadic-macros -Wno-parentheses -Wno-unknown-pragmas -Wwrite-strings -Wswitch -Wunused-parameter -Wfloat-equal -Wnon-virtual-dtor -Weffc++ -Wdate-time -fdiagnostics-show-option -DQT_DISABLE_DEPRECATED_BEFORE=0x050501 -DQT_DEPRECATED_WARNINGS" )
 set( CMAKE_C_FLAGS "${CMAKE_C_FLAGS} -Werror -Wall -Wextra -Wunused-parameter -fwrapv" )
 
 option( SANITIZE "Sanitize addresses, enumerations, unreachable code for ${PROJECT_NAME}. Debug mode only." OFF )
@@ -103,8 +103,9 @@ if( ${CMAKE_SYSTEM_NAME} STREQUAL "Linux" )
     endif()
 
     if(NOT(GCC_VERSION VERSION_LESS 7.0))
-        # We want c++17, not gnu++11
-        set(CMAKE_CXX_STANDARD 17)
+        # We now want c++17
+        #set(CMAKE_CXX_STANDARD 17) -- this uses -std=c++1z on Ubuntu 18.04
+        set(CMAKE_CXX_FLAGS -std=gnu++17)
     endif()
 else()
     message( WARNING "You may have problems trying to compile this code on non-*nix platforms." )
