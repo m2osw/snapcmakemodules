@@ -1,3 +1,13 @@
+snapcmakemodules (1.0.67.0~bionic) bionic; urgency=high
+
+  * Use `-std=gnu++17` instead of `-std=c++17`.
+  * Applied a fix so gnu++17 works with Qt on Ubuntu 18.04.
+  * Added a script to run the tests and catch exceptions.
+  * Removed the fixed cmake version 3.5.
+  * Got the CheckCXXAbstractClass.cmake to work again (as a result).
+
+ -- Alexis Wilke <alexis@m2osw.com>  Sun, 30 Oct 2022 20:54:31 -0700
+
 snapcmakemodules (1.0.66.0~bionic) bionic; urgency=high
 
   * Added the --source-dir to the tests run by the mk script.
