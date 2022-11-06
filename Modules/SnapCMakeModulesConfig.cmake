@@ -82,7 +82,7 @@ set(CMAKE_CXX11_STANDARD_COMPILE_OPTION "")
 
 
 option(SANITIZE "Sanitize addresses, enumerations, unreachable code for ${PROJECT_NAME}. Debug mode only." OFF)
-if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     if(${SANITIZE})
         message("*** SANITIZE TURNED ON ***")
         set(SANITIZE_SWITCH "-fsanitize=address -fsanitize=enum -fsanitize=unreachable")
@@ -95,7 +95,7 @@ set( CMAKE_CXX_FLAGS_RELEASE "${CMAKE_CXX_FLAGS_RELEASE} -DNDEBUG -O3" )
 set( CMAKE_C_FLAGS_DEBUG   "${CMAKE_C_FLAGS_DEBUG} -DDEBUG -D_DEBUG -g -O0 ${SANITIZE_SWITCH}" )
 set( CMAKE_C_FLAGS_RELEASE "${CMAKE_C_FLAGS_RELEASE} -DNDEBUG -O3" )
 
-if( ${CMAKE_SYSTEM_NAME} STREQUAL "Linux" )
+if(CMAKE_SYSTEM_NAME STREQUAL "Linux")
     set( SNAP_LINUX TRUE )
 
     set( CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC" )
@@ -133,10 +133,10 @@ option( COVERAGE "Turn on coverage for ${PROJECT_NAME}." OFF )
 if( ${COVERAGE} )
 	message("*** COVERAGE TURNED ON ***")
 	find_program( COV gcov )
-	if( ${COV} STREQUAL "COV-NOTFOUND" )
+	if( COV STREQUAL "COV-NOTFOUND" )
 		message( FATAL_ERROR "Coverage requested, but gcov not installed!" )
 	endif()
-	if( NOT ${CMAKE_BUILD_TYPE} STREQUAL "Debug" )
+	if( NOT CMAKE_BUILD_TYPE STREQUAL "Debug" )
 		message( FATAL_ERROR "Coverage requested, but Debug is not turned on! (i.e. -DCMAKE_BUILD_TYPE=Debug)" )
 	endif()
 	#
@@ -163,7 +163,7 @@ find_package_handle_standard_args(
 
 
 find_program( DPKG_PARSECHANGELOG dpkg-parsechangelog )
-if( ${DPKG_PARSECHANGELOG} STREQUAL "DPKG_PARSECHANGELOG-NOTFOUND" )
+if( DPKG_PARSECHANGELOG STREQUAL "DPKG_PARSECHANGELOG-NOTFOUND" )
     message( FATAL_ERROR "dpkg-parsechangelog not found! Please install `dpkg-dev` and rerun CMake." )
 endif()
 
@@ -174,7 +174,7 @@ endif()
 # You must have dpkg-dev installed first!
 #
 function( SnapGetVersion PACKAGE_NAME WORKING_DIRECTORY )
-    if( ${DPKG_PARSECHANGELOG} STREQUAL ${DPKG_PARSECHANGELOG}-NOTFOUND )
+    if( DPKG_PARSECHANGELOG STREQUAL ${DPKG_PARSECHANGELOG}-NOTFOUND )
         message( FATAL_ERROR "dpkg-parsechangelog not found! Is dpkg-dev installed?" )
     endif()
 
@@ -216,6 +216,18 @@ function( SnapGetVersion PACKAGE_NAME WORKING_DIRECTORY )
     set( ${PACKAGE_NAME}_VERSION_MINOR ${minor_version} PARENT_SCOPE )
     set( ${PACKAGE_NAME}_VERSION_PATCH ${patch_version} PARENT_SCOPE )
     set( ${PACKAGE_NAME}_VERSION_BUILD ${build_version} PARENT_SCOPE )
+
+    file(GLOB SYSUSER debian/*.sysuser)
+    if(NOT SYSUSER STREQUAL "")
+        execute_process(
+            COMMAND grep dh-sysuser debian/control
+            WORKING_DIRECTORY ${WORKING_DIRECTORY}
+            OUTPUT_VARIABLE DH_SYSUSER
+        )
+        if(DH_SYSUSER STREQUAL "")
+            message(FATAL_ERROR "FATAL ERROR: found one or more .sysuser files (${SYSUSER}) but not the corresponding dh-sysuser dependency in the 'debian/control' file.")
+        endif()
+    endif()
 
 endfunction()
 
