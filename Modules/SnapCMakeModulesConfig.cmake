@@ -227,6 +227,42 @@ function( SnapGetVersion PACKAGE_NAME WORKING_DIRECTORY )
         if(DH_SYSUSER STREQUAL "")
             message(FATAL_ERROR "FATAL ERROR: found one or more .sysuser files (${SYSUSER}) but not the corresponding dh-sysuser dependency in the 'debian/control' file.")
         endif()
+        execute_process(
+            COMMAND grep "with sysuser" debian/rules
+            WORKING_DIRECTORY ${WORKING_DIRECTORY}
+            OUTPUT_VARIABLE WITH_SYSUSER
+        )
+        if(WITH_SYSUSER STREQUAL "")
+            message(FATAL_ERROR "FATAL ERROR: found one or more .sysuser files (${SYSUSER}) but not the corresponding '--with sysuser' option in the 'debian/rules' file.")
+        endif()
+    endif()
+
+    execute_process(
+        COMMAND grep -lr "usr.bin.dh-exec" debian
+        WORKING_DIRECTORY ${WORKING_DIRECTORY}
+        OUTPUT_VARIABLE USING_DH_EXEC
+    )
+    if(NOT USING_DH_EXEC STREQUAL "")
+        execute_process(
+            COMMAND grep "dh-exec" debian/control
+            WORKING_DIRECTORY ${WORKING_DIRECTORY}
+            OUTPUT_VARIABLE DH_EXEC
+        )
+        if(DH_EXEC STREQUAL "")
+            message(FATAL_ERROR "FATAL ERROR: found one or more debian file using dh-exec, but could not find the dependency in the debian/control file.")
+        endif()
+        separate_arguments(EXECUTABLES UNIX_COMMAND ${USING_DH_EXEC})
+        foreach(dh_exec_file ${EXECUTABLES})
+            execute_process(
+                COMMAND test -x "${dh_exec_file}"
+                WORKING_DIRECTORY ${WORKING_DIRECTORY}
+                RESULT_VARIABLE DH_EXECUTABLE
+            )
+message("--- checked [${dh_exec_file}] -> [${DH_EXECUTABLE}]")
+            if(NOT DH_EXECUTABLE STREQUAL "0")
+                message(FATAL_ERROR "FATAL ERROR: found ${dh_exec_file} with #!/usr/bin/dh-exec but it is not executable.")
+            endif()
+        endforeach()
     endif()
 
 endfunction()

@@ -2,6 +2,10 @@ snapcmakemodules (1.0.68.0~bionic) bionic; urgency=high
 
   * Added a test to make sure I have the dh-sysuser in the control file when
     there is at least one <name>.sysuser file.
+  * Added a test to make sure I have the "--with sysuser" in the rules.
+  * Added a test to make sure I have the dh-exec dependency when one of the
+    debian file requires it (i.e. starts with #!/usr/bin/dh-exec).
+  * Added a test to makes sure dh-exec files are executables.
 
  -- Alexis Wilke <alexis@m2osw.com>  Sun, 06 Nov 2022 08:28:27 -0800
 
