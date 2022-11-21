@@ -1,3 +1,11 @@
+snapcmakemodules (1.0.69.0~bionic) bionic; urgency=high
+
+  * Removed the trigraph warning. By default trigraph is not active in g++.
+  * When coreveage is run for specific tests (i.e. test names or tag names
+    were specified) then it doesn't get published. Reflect that in the code.
+
+ -- Alexis Wilke <alexis@m2osw.com>  Sun, 20 Nov 2022 21:31:17 -0800
+
 snapcmakemodules (1.0.68.0~bionic) bionic; urgency=high
 
   * Added a test to make sure I have the dh-sysuser in the control file when

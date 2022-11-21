@@ -31,7 +31,7 @@
 
 if test ! -d debian
 then
-        echo "error: this script is expected to be run from the top folder of a project (where the debian folder appears)."
+        echo "error: this script is expected to be run from the top folder of a project (where the \"debian\" folder appears)."
         exit 1
 fi
 
@@ -108,11 +108,12 @@ do
         echo "   --project | -p <name>"
         echo "                  force the name of the project"
         echo "   --publish-dir  path to directory where the results are published (html)"
+        echo "                  ignored if test or tag names are used"
         echo "   --version      display version and exit"
         echo
         echo "The command can be followed by test names if you want to determine coverage"
-        echo "for a specific test. At this time, this blows away the full coverage."
-        echo "(i.e. there is only one output folder)"
+        echo "for a specific test (or a set of tests using '[tag]' names). When such are"
+        echo "defined, the coverage data does not get published."
         exit 1
         ;;
 
@@ -188,7 +189,7 @@ then
     touch "${PUBLISH_DIR}/writable"
     rm "${PUBLISH_DIR}/writable"
 
-    if test -d "${PUBLISH_DIR}/${PROJECT_NAME}/${PROJECT_NAME}-${VERSION}"
+    if test -d "${PUBLISH_DIR}/${PROJECT_NAME}/${PROJECT_NAME}-${VERSION}" -a -z "${TESTS}"
     then
         echo "warning: a published directory with the current version of ${PROJECT_NAME} already exists:"
         echo "warning:"
@@ -439,6 +440,17 @@ then
 
     # Copy coverage and statistics HTML results
     cp -r html/* ${PUBLISH_DIR}/${PROJECT_NAME}/${PROJECT_NAME}-$VERSION/.
+elif test -d ${PUBLISH_DIR}
+then
+    echo "***"
+    echo "*** NOT PUBLISHED: test or tag names were specified, find results here:"
+    echo "***     `pwd`/html/index.html"
+    echo "***"
+else
+    echo "***"
+    echo "*** the coverage results are here:"
+    echo "***     `pwd`/html/index.html"
+    echo "***"
 fi
 
 
