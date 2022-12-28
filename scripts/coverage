@@ -83,7 +83,7 @@ else
     CONTRIBDIR="contrib/"
     TOPDIR=`cd ../../BUILD/Debug && pwd`
 fi
-DIST="$TOPDIR/dist"
+DIST="${TOPDIR}/dist"
 
 
 
@@ -300,7 +300,9 @@ fi
 echo "Start running ${PROJECT_NAME} tests v${UNITTEXT_VERSION} on `date`" >test_log.txt
 echo >>test_log.txt
 set -x
+OUTPUT=`cd BUILD; pwd`
 BUILD/tests/unittest \
+    --binary-dir "${OUTPUT}" \
     --source-dir "${SOURCE}" \
     --tmp-dir "${PROJECT_BINDIR}/tmp" \
     --warn NoAssertions \

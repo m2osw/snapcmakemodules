@@ -1,5 +1,11 @@
 snapcmakemodules (1.0.69.0~bionic) bionic; urgency=high
 
+  * Added the --binary-dir argument to call unittest.
+
+ -- Alexis Wilke <alexis@m2osw.com>  Tue, 27 Dec 2022 16:06:00 -0800
+
+snapcmakemodules (1.0.69.0~bionic) bionic; urgency=high
+
   * Removed the trigraph warning. By default trigraph is not active in g++.
   * When coreveage is run for specific tests (i.e. test names or tag names
     were specified) then it doesn't get published. Reflect that in the code.
