@@ -300,7 +300,12 @@ then
 			${OUTPUT}/tests/unittest --tmp-dir "${PROJECT_TMPDIR}" --binary-dir "${BINARY_DIR}" --source-dir "${SOURCE}" ${PROJECT_TEST_ARGS} ${TEST_SEED} --progress ${TESTS} 2>&1 | less -SR
 			RESULT=${PIPESTATUS[0]}
 		else
-			${OUTPUT}/tests/unittest --tmp-dir "${PROJECT_TMPDIR}" --binary-dir "${BINARY_DIR}" --source-dir "${SOURCE}" ${PROJECT_TEST_ARGS} ${TEST_SEED} --progress ${TESTS}
+			if test "${VERBOSE}" -eq 1
+			then
+				/usr/bin/time --verbose ${OUTPUT}/tests/unittest --tmp-dir "${PROJECT_TMPDIR}" --binary-dir "${BINARY_DIR}" --source-dir "${SOURCE}" ${PROJECT_TEST_ARGS} ${TEST_SEED} --progress ${TESTS}
+			else
+				/usr/bin/time ${OUTPUT}/tests/unittest --tmp-dir "${PROJECT_TMPDIR}" --binary-dir "${BINARY_DIR}" --source-dir "${SOURCE}" ${PROJECT_TEST_ARGS} ${TEST_SEED} --progress ${TESTS}
+			fi
 			RESULT=${?}
 		fi
 	fi
