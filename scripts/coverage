@@ -426,23 +426,23 @@ echo "</pre></body></html>" >>html/test_log.html
 
 # For publication, if that directory does not exist, you probably don't
 # have a website to display this data
-if test -z "${TESTS}" -a -d ${PUBLISH_DIR}
+if test -z "${TESTS}" -a -n "${PUBLISH_DIR}" -a -d "${PUBLISH_DIR}"
 then
     echo "***"
     echo "*** publication to lcov.snapwebsites.org/${PROJECT_NAME} (${END_DATE})"
     echo "***"
 
     # Create folder for this specific version
-    mkdir -p ${PUBLISH_DIR}/${PROJECT_NAME}/${PROJECT_NAME}-$VERSION
+    mkdir -p "${PUBLISH_DIR}/${PROJECT_NAME}/${PROJECT_NAME}-${VERSION}"
 
     # Make sure we have the latest index
     sed -e "s/@PROJECT_NAME@/${PROJECT_NAME}/" \
-        $SCRIPTS/index.php \
-            >${PUBLISH_DIR}/${PROJECT_NAME}/index.php
+        "${SCRIPTS}/index.php" \
+            >"${PUBLISH_DIR}/${PROJECT_NAME}/index.php"
 
     # Copy coverage and statistics HTML results
-    cp -r html/* ${PUBLISH_DIR}/${PROJECT_NAME}/${PROJECT_NAME}-$VERSION/.
-elif test -d ${PUBLISH_DIR}
+    cp -r html/* "${PUBLISH_DIR}/${PROJECT_NAME}/${PROJECT_NAME}-$VERSION/."
+elif test -n "${PUBLISH_DIR}" -a -d "${PUBLISH_DIR}"
 then
     echo "***"
     echo "*** NOT PUBLISHED: test or tag names were specified, find results here:"
