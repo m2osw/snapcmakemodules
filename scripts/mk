@@ -2,20 +2,37 @@
 #
 # Sample script to run make without having to retype the long path each time
 # This will work if you built the environment using our ~/bin/build-snap script
+#
+# If your project requires additional parameters to its Unit Tests, then add
+# a PROJECT_TEST_ARGS in your local mk script:
+#
+#    export PROJECT_TEST_ARGS='--tcp-port 80'
+#
+# You can add any other variable you may need like a path to tools your are
+# using at compile time (See contrib/sitter/mk for details):
+#
+#    export PATH="`cd ../../BUILD/Debug/contrib/advgetopt/tools && pwd`:${PATH}"
 
+
+##
+## VERIFY BASIC ENVIRONMENT
+##
 if test ! -d debian
 then
-	echo "error: this script is expected to be run from the top folder of a project (where the debian folder appears)."
-	exit 1
+    echo "error: this script is expected to be run from the top folder of a project (where the debian folder appears)."
+    exit 1
 fi
 
 if test "`whoami`" = "root"
 then
-	echo "error: this script cannot be run as root."
-	exit 1
+    echo "error: this script cannot be run as root."
+    exit 1
 fi
 
 
+##
+## DEFINE VARIABLE USER CAN CHANGE WITH COMMAND LINE OPTIONS
+##
 FULL_VERSION=`dpkg-parsechangelog --show-field Version | sed -e 's/~.*//' -e 's/\(^[0-9]\+\.[0-9]\+\.[0-9]\+.[0-9]\+\).*/\1/'`
 DOC_VERSION=`echo ${FULL_VERSION} | sed -e 's/\(^[0-9]\+\.[0-9]\+\).*/\1/'`
 SOURCE=`pwd`
@@ -25,11 +42,11 @@ PARENTDIR=`dirname ${SOURCE}`
 PARENTNAME=`basename ${PARENTDIR}`
 if test "${PARENTNAME}" != "contrib"
 then
-	CONTRIBDIR=""
-	TOPDIR=".."
+    CONTRIBDIR=""
+    TOPDIR=".."
 else
-	CONTRIBDIR="contrib/"
-	TOPDIR="../.."
+    CONTRIBDIR="contrib/"
+    TOPDIR="../.."
 fi
 BUILD="${TOPDIR}/BUILD"
 TYPE="Debug"
@@ -39,7 +56,7 @@ DOCS=false
 COVERAGE=
 TEST=false
 TEST_DBG=false
-TESTS="${TEST_OPTIONS}"		# TEST_OPTIONS can be defined by the project to add default options to always use along the unittest
+TESTS="${TEST_OPTIONS}"        # TEST_OPTIONS can be defined by the project to add default options to always use along the unittest
 TEST_SEED=
 CATCH_EXCEPTIONS=
 LAUNCHPAD=false
@@ -47,290 +64,371 @@ LAUNCHPAD=false
 # Retrieve the user default PROCESSORS=... and other variables
 if test -f ~/.build-snap.rc
 then
-	. ~/.build-snap.rc
+    . ~/.build-snap.rc
 fi
 
+##
+## PARSE USER COMMAND LINE OPTIONS
+##
 while test -n "${1}"
 do
-	case ${1} in
-	"--catch-exceptions")
-		shift
-		CATCH_EXCEPTIONS='-ex "catch throw"'
-		;;
+    case ${1} in
+    "--catch-exceptions")
+        shift
+        CATCH_EXCEPTIONS='-ex "catch throw"'
+        ;;
 
-	"--clean"|"-k")
-		shift
-		TARGET=clean
-		;;
+    "--clean"|"-k")
+        shift
+        TARGET=clean
+        ;;
 
-	"--coverage"|"-c")
-		if test ! -d tests
-		then
-			echo "error: no tests folder detected; option not available."
-			exit 1
-		fi
-		if test -x ../cmake/scripts/coverage
-		then
-			COVERAGE=../cmake/scripts/coverage
-		elif test -x ../../cmake/scripts/coverage
-		then
-			COVERAGE=../../cmake/scripts/coverage
-		else
-			echo "error: could not find the coverage script in .../cmake/scripts"
-			exit 1
-		fi
-		shift
-		;;
+    "--coverage"|"-c")
+        if test ! -d tests
+        then
+            echo "error: no tests folder detected; option not available."
+            exit 1
+        fi
+        if test -x ../cmake/scripts/coverage
+        then
+            COVERAGE=../cmake/scripts/coverage
+        elif test -x ../../cmake/scripts/coverage
+        then
+            COVERAGE=../../cmake/scripts/coverage
+        else
+            echo "error: could not find the coverage script in .../cmake/scripts"
+            exit 1
+        fi
+        shift
+        ;;
 
-	"--documentation"|"-d")
-		if test ! -d doc
-		then
-			echo "error: doc folder not present; option not available."
-			exit 1
-		fi
-		shift
-		DOCS=true
-		;;
+    "--documentation"|"-d")
+        if test ! -d doc
+        then
+            echo "error: doc folder not present; option not available."
+            exit 1
+        fi
+        shift
+        DOCS=true
+        ;;
 
-	"--debug"|"-g")
-		shift
-		TYPE="Debug"
-		;;
+    "--debug"|"-g")
+        shift
+        TYPE="Debug"
+        ;;
 
-	"--help"|"-h")
-		echo "Usage: ${0} [-opts]"
-		echo "where -opts are:"
-		echo "  --clean | -k              Clean the output folder"
+    "--help"|"-h")
+        echo "Usage: ${0} [-opts]"
+        echo "where -opts are:"
+        echo "  --clean | -k              Clean the output folder"
 
-		if test -d tests
-		then
-			echo "  --coverage | -c           Run the tests to determine coverage."
-			echo "                            Use -t with -c to only run coverage for those tests."
-		fi
+        if test -d tests
+        then
+            echo "  --coverage | -c           Run the tests to determine coverage."
+            echo "                            Use -t with -c to only run coverage for those tests."
+        fi
 
-		echo "  --documentation | -d      Rebuild the documentation."
-		echo "  --debug | -g              Build the Debug version."
-		echo "  --help | -h               Print out this help screen."
-		echo "  --install | -i            Install once built."
-		echo "  --less | -l               Force output through less."
+        echo "  --documentation | -d      Rebuild the documentation."
+        echo "  --debug | -g              Build the Debug version."
+        echo "  --help | -h               Print out this help screen."
+        echo "  --install | -i            Install once built."
+        echo "  --less | -l               Force output through less."
 
-		if test -d debian
-		then
-			echo "  --packages | -b           Build packages on launchpad."
-		fi
+        if test -d debian
+        then
+            echo "  --packages | -b           Build packages on launchpad."
+        fi
 
-		echo "  --processors | -p <count> Change the number of processors."
-		echo "  --release | -r            Build the Release version."
-		echo "  --sanitize | -s           Build the Sanitized version."
+        echo "  --processors | -p <count> Change the number of processors."
+        echo "  --release | -r            Build the Release version."
+        echo "  --sanitize | -s           Build the Sanitized version."
 
-		if test -d tests
-		then
-			echo "  --seed <seed>             Define the seed."
-			echo "  --test | -t [<name> ...]  Build and then run the tests."
-			echo "                            Tests names can be written separated by commas"
-			echo "                            in which case you cannot include any spaces:"
-			echo "                               -t a b c   or   -t a,b,c"
-			echo "  --tg [<name> ...]         Like --test but run the tests with the debugger."
-		fi
+        if test -d tests
+        then
+            echo "  --seed <seed>             Define the seed."
+            echo "  --test | -t [<name> ...]  Build and then run the tests."
+            echo "                            Tests names can be written separated by commas"
+            echo "                            in which case you cannot include any spaces:"
+            echo "                               -t a b c   or   -t a,b,c"
+            echo "  --tg [<name> ...]         Like --test but run the tests with the debugger."
+        fi
 
-		echo "  --verbose | -v            Render the 'make' tool verbose."
-		echo "  --version                 Current version of the project."
-		exit 0
-		;;
+        echo "  --verbose | -v            Render the 'make' tool verbose."
+        echo "  --version                 Current version of the project."
+        exit 0
+        ;;
 
-	"--install"|"-i")
-		shift
-		TARGET=install
-		;;
+    "--install"|"-i")
+        shift
+        TARGET=install
+        ;;
 
-	"--less"|"-l")
-		shift
-		LESS=true
-		;;
+    "--less"|"-l")
+        shift
+        LESS=true
+        ;;
 
-	"--packages"|"-b")
-		if test ! -d debian
-		then
-			echo "error: build on launchpad not available, debian folder not found."
-			exit 1
-		fi
-		read -p "Are you sure you are ready to build on Launchpad? (y/[N]) " answer
-		if test "${answer}" != "y" -a "${answer}" != "Y"
-		then
-			echo "warning: the build was not approved."
-			exit 1
-		fi
-		shift
-		LAUNCHPAD=true
-		;;
+    "--packages"|"-b")
+        if test ! -d debian
+        then
+            echo "error: build on launchpad not available, debian folder not found."
+            exit 1
+        fi
+        read -p "Are you sure you are ready to build on Launchpad? (y/[N]) " answer
+        if test "${answer}" != "y" -a "${answer}" != "Y"
+        then
+            echo "warning: the build was not approved."
+            exit 1
+        fi
+        shift
+        LAUNCHPAD=true
+        ;;
 
-	"--processors"|"-p")
-		shift
-		PROCESSORS="${1}"
-		shift
-		;;
+    "--processors"|"-p")
+        shift
+        PROCESSORS="${1}"
+        shift
+        ;;
 
-	"--release"|"-r")
-		shift
-		TYPE="Release"
-		;;
+    "--release"|"-r")
+        shift
+        TYPE="Release"
+        ;;
 
-	"--sanitize"|"-s")
-		shift
-		TYPE="Sanitize"
-		;;
+    "--sanitize"|"-s")
+        shift
+        TYPE="Sanitize"
+        ;;
 
-	"--seed")
-		shift
-		TEST_SEED="--seed $1"
-		shift
-		;;
+    "--seed")
+        shift
+        TEST_SEED="--seed $1"
+        shift
+        ;;
 
-	"--test"|"-t"|"--tg")
-		if test ! -d tests
-		then
-			echo "error: no tests folder detected; option not available."
-			exit 1
-		fi
-		if test "$1" = "--tg"
-		then
-			TEST_DBG=true
-		fi
-		shift
-		TEST=true
-		while [[ "${1}" != "" && "${1}" != "-"* ]]
-		do
-			if test -n "${TESTS}"
-			then
-				TESTS="${TESTS},"
-			fi
-			TESTS="${TESTS}${1}"
-			shift
-		done
-		;;
+    "--test"|"-t"|"--tg")
+        if test ! -d tests
+        then
+            echo "error: no tests folder detected; option not available."
+            exit 1
+        fi
+        if test "$1" = "--tg"
+        then
+            TEST_DBG=true
+        fi
+        shift
+        TEST=true
+        while [[ "${1}" != "" && "${1}" != "-"* ]]
+        do
+            if test -n "${TESTS}"
+            then
+                TESTS="${TESTS},"
+            fi
+            TESTS="${TESTS}${1}"
+            shift
+        done
+        ;;
 
-	"--verbose"|"-v")
-		shift
-		export VERBOSE=1
-		;;
+    "--verbose"|"-v")
+        shift
+        export VERBOSE=1
+        ;;
 
-	"--version")
-		echo $FULL_VERSION
-		exit 0
-		;;
+    "--version")
+        echo $FULL_VERSION
+        exit 0
+        ;;
 
-	*)
-		echo "error: unknown command line option \"${1}\"."
-		exit 1
-		;;
+    *)
+        echo "error: unknown command line option \"${1}\"."
+        exit 1
+        ;;
 
-	esac
+    esac
 done
 
-if test "${TARGET}" = "clean"
-then
-	if test -n "${COVERAGE}"
-	then
-		echo "error: --clean and --coverage can't be used together."
-		exit 1
-	fi
-	if ${TEST}
-	then
-		echo "error: --clean and --test can't be used together."
-		exit 1
-	fi
-	if ${DOCS}
-	then
-		echo "error: --clean and --documentation can't be used together."
-		exit 1
-	fi
-
-	if test -d tmp
-	then
-		rmdir --ignore-fail-on-non-empty tmp
-	fi
-
-	# Also delete the docs so they get rebuilt too
-	# (I know the last test above is contradictory...)
-	#
-	DOCS=true
-fi
-
-
-
+##
+## Further variable initialization
+##
 OUTPUT="${BUILD}/${TYPE}/${CONTRIBDIR}${PROJECT}"
 PROJECT_TMPDIR="${OUTPUT}/tmp"
 
-
-if ${DOCS}
+BINARY_DIR="`cd ${OUTPUT} && pwd`"
+RESULT=${?}
+if [[ ${RESULT} != 0 ]]
 then
-	# Delete the existing output folder and the tarball
-	#
-	rm -rf ${OUTPUT}/doc/${PROJECT}-doc-${DOC_VERSION} \
-	       ${OUTPUT}/doc/${PROJECT}-doc-${DOC_VERSION}.tar.gz
+    echo "error: could not cd to OUTPUT directory \"${OUTPUT}\"."
+    exit 1
 fi
+
+##
+## VERIFY PARAMETER COHERENCY (avoid conflicts)
+##
+if test "${TARGET}" = "clean"
+then
+    if test -n "${COVERAGE}"
+    then
+        echo "error: --clean and --coverage can't be used together."
+        exit 1
+    fi
+    if ${TEST}
+    then
+        echo "error: --clean and --test can't be used together."
+        exit 1
+    fi
+    if ${LAUNCHPAD}
+    then
+        echo "error: --clean and --packages can't be used together."
+        exit 1
+    fi
+    if ${DOCS}
+    then
+        echo "error: --clean and --documentation can't be used together."
+        exit 1
+    fi
+
+    # Also delete the docs so they get rebuilt too
+    #
+    # (I know the last test above seems contradictory... that's because
+    # of the target which could be incorrect otherwise)
+    #
+    DOCS=true
+fi
+
+if ${TEST_DBG} && ${LESS}
+then
+    echo "error: --tg (run tests in gdb) and -l (output to less) can't be used togeter."
+    exit 1
+fi
+
+if ${TEST_DBG} && ${COVERAGE}
+then
+    echo "error: --tg (run tests in gdb) and --coverage can't be used togeter."
+    exit 1
+fi
+
+if ${TEST_DBG} && ${LAUNCHPAD}
+then
+    echo "error: --tg (run tests in gdb) and --packages (send to launchpad) can't be used togeter."
+    exit 1
+fi
+
+
+process() {
+    ##
+    ## LOCAL CLEAN UP
+    ##
+    if test "${TARGET}" = "clean" -a -d tmp
+    then
+        rmdir --ignore-fail-on-non-empty tmp
+    fi
+
+    ##
+    ## DOCS
+    ##
+    if ${DOCS}
+    then
+        # Delete the existing output folder and the tarball
+        # otherwise the docs do not get reprocessed
+        #
+        rm -rf ${OUTPUT}/doc/${PROJECT}-doc-${DOC_VERSION} \
+               ${OUTPUT}/doc/${PROJECT}-doc-${DOC_VERSION}.tar.gz
+    fi
+
+    ##
+    ## BUILD PROJECT
+    ##
+    make -j${PROCESSORS} -C ${OUTPUT} ${TARGET}
+    RESULT=${?}
+    if [[ ${RESULT} != 0 ]]
+    then
+        return
+    fi
+
+    if test -n "${COVERAGE}"
+    then
+        ${COVERAGE} ${TESTS}
+        RESULT=${?}
+        if [[ ${RESULT} != 0 ]]
+        then
+            return
+        fi
+    elif ${TEST}
+    then
+        echo "${OUTPUT}/tests/unittest --tmp-dir "${PROJECT_TMPDIR}" --binary-dir "${BINARY_DIR}" --source-dir "${SOURCE}" ${PROJECT_TEST_ARGS} ${TEST_SEED} --progress ${TESTS}"
+        if ${TEST_DBG}
+        then
+            gdb ${CATCH_EXCEPTIONS} \
+                -ex 'run' \
+                --args ${OUTPUT}/tests/unittest \
+                    --tmp-dir "${PROJECT_TMPDIR}" \
+                    --binary-dir "${BINARY_DIR}" \
+                    --source-dir "${SOURCE}" \
+                    ${PROJECT_TEST_ARGS} \
+                    ${TEST_SEED} \
+                    --progress \
+                        ${TESTS}
+
+            # the check of the result in this case is not quite relevant
+            echo "info: gdb exited."
+            return
+        fi
+
+        BIGTIME=""
+        if test "${VERBOSE}" = "1"
+        then
+            BIGTIME="--verbose"
+        fi
+
+        /usr/bin/time ${BIGTIME} \
+            ${OUTPUT}/tests/unittest \
+                --colour-mode ansi \
+                --tmp-dir "${PROJECT_TMPDIR}" \
+                --binary-dir "${BINARY_DIR}" \
+                --source-dir "${SOURCE}" \
+                ${PROJECT_TEST_ARGS} \
+                ${TEST_SEED} \
+                --progress \
+                    ${TESTS} | tee ${OUTPUT}/tests/tests.log
+        RESULT=${?}
+        echo "info: test logs were saved in: \"${OUTPUT}/tests/tests.log\"."
+        if [[ ${RESULT} != 0 ]]
+        then
+            return
+        fi
+    fi
+
+    if ${LAUNCHPAD}
+    then
+        cd ${TOPDIR}
+        if test ! -d ~/.build-snap.rc
+        then
+            echo
+            echo "warning: no ~/.build-snap.rc file found, send-to-lanchpad.sh may fail"
+            echo "warning: because it can't properly sign the source files."
+            echo
+        fi
+        bin/send-to-launchpad.sh ${PROJECT}
+        RESULT=${?}
+    fi
+}
 
 if ${LESS}
 then
-	make -j${PROCESSORS} -C ${OUTPUT} ${TARGET} 2>&1 | less -SR
-	RESULT=${PIPESTATUS[0]}
+    process 2>&1 | less -SR
+    RESULT=${PIPESTATUS[0]}
 else
-	make -j${PROCESSORS} -C ${OUTPUT} ${TARGET}
-	RESULT=${?}
+    process
 fi
 
-if [[ ${RESULT} = 0 ]]
+if [[ ${RESULT} != 0 ]]
 then
-	if test -n "${COVERAGE}"
-	then
-		${COVERAGE} ${TESTS}
-		RESULT=${?}
-	elif ${TEST}
-	then
-		BINARY_DIR="`cd ${OUTPUT} && pwd`"
-		echo "${OUTPUT}/tests/unittest --tmp-dir "${PROJECT_TMPDIR}" --binary-dir "${BINARY_DIR}" --source-dir "${SOURCE}" ${PROJECT_TEST_ARGS} ${TEST_SEED} --progress ${TESTS}"
-		if ${TEST_DBG}
-		then
-			gdb ${CATCH_EXCEPTIONS} -ex 'run' --args ${OUTPUT}/tests/unittest --tmp-dir "${PROJECT_TMPDIR}" --binary-dir "${BINARY_DIR}" --source-dir "${SOURCE}" ${PROJECT_TEST_ARGS} ${TEST_SEED} --progress ${TESTS}
-
-			# the check of the result in this case is not quite relevant
-			exit 0
-		elif ${LESS}
-		then
-			${OUTPUT}/tests/unittest --tmp-dir "${PROJECT_TMPDIR}" --binary-dir "${BINARY_DIR}" --source-dir "${SOURCE}" ${PROJECT_TEST_ARGS} ${TEST_SEED} --progress ${TESTS} 2>&1 | less -SR
-			RESULT=${PIPESTATUS[0]}
-		else
-			if test "${VERBOSE}" = "1"
-			then
-				/usr/bin/time --verbose ${OUTPUT}/tests/unittest --tmp-dir "${PROJECT_TMPDIR}" --binary-dir "${BINARY_DIR}" --source-dir "${SOURCE}" ${PROJECT_TEST_ARGS} ${TEST_SEED} --progress ${TESTS}
-			else
-				/usr/bin/time ${OUTPUT}/tests/unittest --tmp-dir "${PROJECT_TMPDIR}" --binary-dir "${BINARY_DIR}" --source-dir "${SOURCE}" ${PROJECT_TEST_ARGS} ${TEST_SEED} --progress ${TESTS}
-			fi
-			RESULT=${?}
-		fi
-	fi
+    echo
+    echo "Build, Tests/Coverage, or Upload failed."
+    exit 1
 fi
 
-if [[ ${RESULT} = 0 ]]
-then
-	if ${LAUNCHPAD}
-	then
-		cd ${TOPDIR}
-		if test ! -d ~/.build-snap.rc
-		then
-			echo
-			echo "warning: no ~/.build-snap.rc file found, send-to-lanchpad.sh may fail"
-			echo "warning: because it can't properly sign the source files."
-			echo
-		fi
-		bin/send-to-launchpad.sh ${PROJECT}
-	fi
-	echo
-	echo "Success."
-else
-	echo
-	echo "Build, Tests, or Coverage failed."
+echo
+echo "Success."
 
-	exit 1
-fi
-
+# vim: ts=4 sw=4 et
