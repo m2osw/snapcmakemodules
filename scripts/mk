@@ -301,7 +301,7 @@ then
     exit 1
 fi
 
-if ${TEST_DBG} && ${COVERAGE}
+if ${TEST_DBG} && -n ${COVERAGE}
 then
     echo "error: --tg (run tests in gdb) and --coverage can't be used togeter."
     exit 1
@@ -340,18 +340,20 @@ process() {
     ##
     make -j${PROCESSORS} -C ${OUTPUT} ${TARGET}
     RESULT=${?}
-    if [[ ${RESULT} != 0 ]]
+    if [[ ${RESULT} -ne 0 ]]
     then
-        return
+        echo "error: build failed."
+        return 1
     fi
 
     if test -n "${COVERAGE}"
     then
         ${COVERAGE} ${TESTS}
         RESULT=${?}
-        if [[ ${RESULT} != 0 ]]
+        if [[ ${RESULT} -ne 0 ]]
         then
-            return
+            echo "error: coverage script failed."
+            return 1
         fi
     elif ${TEST}
     then
@@ -371,7 +373,7 @@ process() {
 
             # the check of the result in this case is not quite relevant
             echo "info: gdb exited."
-            return
+            return 0
         fi
 
         BIGTIME=""
@@ -390,11 +392,12 @@ process() {
                 ${TEST_SEED} \
                 --progress \
                     ${TESTS} | tee ${OUTPUT}/tests/tests.log
-        RESULT=${?}
+        RESULT=${PIPESTATUS[0]}
         echo "info: test logs were saved in: \"${OUTPUT}/tests/tests.log\"."
-        if [[ ${RESULT} != 0 ]]
+        if [[ ${RESULT} -ne 0 ]]
         then
-            return
+            echo "error: test(s) failed."
+            return 1
         fi
     fi
 
@@ -409,7 +412,6 @@ process() {
             echo
         fi
         bin/send-to-launchpad.sh ${PROJECT}
-        RESULT=${?}
     fi
 }
 
@@ -419,9 +421,10 @@ then
     RESULT=${PIPESTATUS[0]}
 else
     process
+    RESULT=${?}
 fi
 
-if [[ ${RESULT} != 0 ]]
+if [[ ${RESULT} -ne 0 ]]
 then
     echo
     echo "Build, Tests/Coverage, or Upload failed."
