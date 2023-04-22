@@ -1,6 +1,6 @@
 ################################################################################
 #
-# Copyright (c) 2011-2022  Made to Order Software Corp.  All Rights Reserved
+# Copyright (c) 2011-2023  Made to Order Software Corp.  All Rights Reserved
 #
 # http://snapwebsites.org/
 # contact@m2osw.com
@@ -253,14 +253,17 @@ function( SnapGetVersion PACKAGE_NAME WORKING_DIRECTORY )
         endif()
         separate_arguments(EXECUTABLES UNIX_COMMAND ${USING_DH_EXEC})
         foreach(dh_exec_file ${EXECUTABLES})
-            execute_process(
-                COMMAND test -x "${dh_exec_file}"
-                WORKING_DIRECTORY ${WORKING_DIRECTORY}
-                RESULT_VARIABLE DH_EXECUTABLE
-            )
+            # ignore swap files (from vim)
+            if(NOT ${dh_exec_file} MATCHES "\.swp")
+                execute_process(
+                    COMMAND test -x "${dh_exec_file}"
+                    WORKING_DIRECTORY ${WORKING_DIRECTORY}
+                    RESULT_VARIABLE DH_EXECUTABLE
+                )
 message("--- checked [${dh_exec_file}] -> [${DH_EXECUTABLE}]")
-            if(NOT DH_EXECUTABLE STREQUAL "0")
-                message(FATAL_ERROR "FATAL ERROR: found ${dh_exec_file} with #!/usr/bin/dh-exec but it is not executable.")
+                if(NOT DH_EXECUTABLE STREQUAL "0")
+                    message(FATAL_ERROR "FATAL ERROR: found ${dh_exec_file} with #!/usr/bin/dh-exec but it is not executable.")
+                endif()
             endif()
         endforeach()
     endif()
