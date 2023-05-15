@@ -86,7 +86,7 @@ execute_process(
 )
 
 option( INCREMENT_BUILD_NUMBERS "Increment the build number in the version of all debian/changelog files." OFF )
-if( ${INCREMENT_BUILD_NUMBERS} )
+if(${INCREMENT_BUILD_NUMBERS})
     add_custom_target(
         snap-incvers
         COMMAND ${INC_VERS_SCRIPT} ${DEP_CACHE_FILE} ${DEBUILD_PLATFORM}
@@ -94,9 +94,16 @@ if( ${INCREMENT_BUILD_NUMBERS} )
         COMMENT "Incrementing build version for all debian packages."
     )
 else()
+    # In this case we do not want the increment, but we still want to fix the
+    # distribution name (i.e. if we handle multiple distributions, then that
+    # would be incorrect without this--the distribution could "bionic" when
+    # building a "jammy" version).
+    #
     add_custom_target(
         snap-incvers
-        COMMENT "Incrementing build version number skipped."
+        COMMAND ${INC_VERS_SCRIPT} ${DEP_CACHE_FILE} ${DEBUILD_PLATFORM} --noinc
+        WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+        COMMENT "Incrementing build version number skipped, only updating distribution name."
     )
 endif()
 

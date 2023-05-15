@@ -35,7 +35,7 @@
 #
 ################################################################################
 #
-die "usage: SnapBuildIncVers.pl <cache filename> <dist>\n" unless $#ARGV == 1;
+die "usage: SnapBuildIncVers.pl <cache filename> <dist> [--inc|--noinc]\n" unless $#ARGV >= 1 && $#ARGV <= 2;
 
 use strict;
 use Cwd;
@@ -46,6 +46,7 @@ use Storable;
 
 my $cache_file   = shift;
 my $distribution = shift;
+my $noinc = shift || "--inc";
 my $change_msg   = "Nightly build.";
 
 my %options;
@@ -70,6 +71,10 @@ my %DIRHASH = %$hashref;
 for my $project (keys %DIRHASH)
 {
     my $projectdir = $DIRHASH{$project};
+    # to test a single project, use the following and remove the for
+    # & previous $projectdir definition
+    #my $projectdir = "/home/snapwebsites/snapcpp/contrib/snaprfs";
+
     chdir( $projectdir );
 
     # Get name and version from changelog
@@ -91,35 +96,45 @@ for my $project (keys %DIRHASH)
 
     # Increment the version
     #
+    my $prepend_newchange = 1;
+    my $versdist = $version;
+    $versdist =~ s/^.*~//;
     $version =~ s/~.*$//;
     my $newvers;
-    if( $version =~ m/^(\d*).(\d+).(\d+)$/ )
+    if( $noinc eq "--noinc" )
     {
-        $newvers = "$1.$2.$3.1";
+        $newvers = $version;
+        $prepend_newchange = 0;
     }
-    elsif( $version =~ m/^(\d*).(\d+).(\d+)-(\d+)$/ )
+    else
     {
-        $newvers = "$1.$2.$3.1-$4";
-    }
-    elsif( $version =~ m/^(\d*).(\d+).(\d+).(\d+)$/ )
-    {
-        my $num = $4+1;
-        $newvers = "$1.$2.$3.$num";
-    }
-    elsif( $version =~ m/^(\d*).(\d+).(\d+).(\d+)-(\d+)$/ )
-    {
-        my $num = $4+1;
-        $newvers = "$1.$2.$3.$num-$5";
-    }
-
-    my @lines = split /\n/, $changes;
-    my $prepend_newchange = 1;
-    for my $line (@lines)
-    {
-        if( $line =~ m/^  \* $change_msg/ )
+        if( $version =~ m/^(\d*).(\d+).(\d+)$/ )
         {
-            $prepend_newchange = 0;
-            last;
+            $newvers = "$1.$2.$3.1";
+        }
+        elsif( $version =~ m/^(\d*).(\d+).(\d+)-(\d+)$/ )
+        {
+            $newvers = "$1.$2.$3.1-$4";
+        }
+        elsif( $version =~ m/^(\d*).(\d+).(\d+).(\d+)$/ )
+        {
+            my $num = $4+1;
+            $newvers = "$1.$2.$3.$num";
+        }
+        elsif( $version =~ m/^(\d*).(\d+).(\d+).(\d+)-(\d+)$/ )
+        {
+            my $num = $4+1;
+            $newvers = "$1.$2.$3.$num-$5";
+        }
+
+        my @lines = split /\n/, $changes;
+        for my $line (@lines)
+        {
+            if( $line =~ m/^  \* $change_msg/ )
+            {
+                $prepend_newchange = 0;
+                last;
+            }
         }
     }
 
@@ -131,7 +146,9 @@ for my $project (keys %DIRHASH)
     }
     else
     {
-        system "sed -i.bak -e 's/$name ($version~$distribution) $dist; urgency=$urgency/$name ($newvers~$distribution) $distribution; urgency=$urgency/' debian/changelog";
+        # Update the existing entry and keep a backup, just in case
+        #
+        system "sed -i.bak -e 's/$name ($version~$versdist) $dist; urgency=$urgency/$name ($newvers~$distribution) $distribution; urgency=$urgency/' debian/changelog";
     }
 }
 
