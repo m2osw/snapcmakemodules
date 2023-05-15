@@ -111,7 +111,7 @@ option( INCREMENT_DEPENDENCIES "Increment ALL dependencies in all packages." OFF
 if( ${INCREMENT_DEPENDENCIES} )
     add_custom_target(
         snap-incdeps
-        COMMAND ${INC_DEPS_SCRIPT} ${DEP_CACHE_FILE} ${DEBUILD_PLATFORM}
+        COMMAND ${INC_DEPS_SCRIPT} ${DEP_CACHE_FILE}
         WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
         DEPENDS snap-incvers
         COMMENT "Incrementing dependencies for all debian packages."
