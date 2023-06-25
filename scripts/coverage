@@ -183,12 +183,12 @@ LOCK_FILE=/run/user/${UID}/coverage-${PROJECT_NAME}.lock
 unlock_script() {
     rm -f ${LOCK_FILE}
 }
-trap unlock_script EXIT
 if ! (set -o noclobber; echo > ${LOCK_FILE})
 then
     echo "error: the \"coverage\" script is currently running, second instance canceled."
     exit 1
 fi
+trap unlock_script EXIT
 
 if test -n "${PUBLISH_DIR}"
 then
