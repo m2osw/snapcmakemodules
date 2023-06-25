@@ -44,10 +44,16 @@ fi
 
 
 #
-# SETUP PARAMETERS
+# SETUP DEFAULT PARAMETERS
 #
 
 PROJECT_NAME=`dpkg-parsechangelog --show-field Source`
+if test -z "${PROJECT_NAME}"
+then
+    echo "error: could not determine default project name."
+    exit 1
+fi
+
 SOURCE=`pwd`
 SCRIPTS_LOCAL_PATH=`dirname $0`
 SCRIPTS=`cd $SCRIPTS_LOCAL_PATH; pwd`
@@ -106,7 +112,7 @@ do
         echo "   --processors <count>"
         echo "                  number of processors to use to run the tests"
         echo "   --project | -p <name>"
-        echo "                  force the name of the project"
+        echo "                  force the name of the project (default \"${PROJECT_NAME}\")"
         echo "   --publish-dir  path to directory where the results are published (html)"
         echo "                  ignored if test or tag names are used"
         echo "   --version      display version and exit"
@@ -162,15 +168,25 @@ do
     esac
 done
 
-if test -z "${PROJECT_NAME}"
-then
-    echo "error: the name of the project is mandatory (see --project option)"
-    exit 1
-fi
-
 if test ${PROCESSORS} -le 0
 then
     echo "error: the number of processors used to compile must be a positive number"
+    exit 1
+fi
+
+if test -z "${UID}"
+then
+    echo "error: expected UID to be defined with your user identifier."
+    exit 1
+fi
+LOCK_FILE=/run/user/${UID}/coverage-${PROJECT_NAME}.lock
+unlock_script() {
+    rm -f ${LOCK_FILE}
+}
+trap unlock_script EXIT
+if ! (set -o noclobber; echo > ${LOCK_FILE})
+then
+    echo "error: the \"coverage\" script is currently running, second instance canceled."
     exit 1
 fi
 
@@ -371,26 +387,22 @@ END_DATE=`date`
 # Statistics
 echo "<html><head><title>${PROJECT_NAME} ${VERSION} statistics</title></head><body>" >html/statistics.html
 
-if test -d $SOURCE/${PROJECT_NAME}
-then
-    echo "<h3>Statistics of the ${PROJECT_NAME} v${VERSION} library</h3><pre>" >>html/statistics.html
-    cloc $SOURCE/${PROJECT_NAME}/ >>html/statistics.html
-fi
-
-if test -d "${SOURCE}/tests"
-then
-    echo "</pre><h3>Statistics of the ${PROJECT_NAME} v${VERSION} tests</h3><pre>" >>html/statistics.html
-    cloc "${SOURCE}/tests/" >>html/statistics.html
-fi
-
-# TODO: support more than one "tools" directory, many of the projects include
-#       several tools;
+# TODO: look at determining the list of folders dynamically (maybe by finding
+#       those with .cpp, .h, .cmake, etc.)
 #
-if test -d "${SOURCE}/tools"
-then
-    echo "</pre><h3>Statistics of ${PROJECT_NAME} tools v${VERSION}</h3><pre>" >>html/statistics.html
-    cloc "${SOURCE}/tools/" >>html/statistics.html
-fi
+for d in ${PROJECT_NAME} daemon cmake scripts tools tests
+do
+    if test -d $SOURCE/${d}
+    then
+        name=${d}
+        if test "${d}" = "${PROJECT_NAME}"
+        then
+            name=library
+        fi
+        echo "<h3>Statistics of the ${PROJECT_NAME} v${VERSION} ${name}</h3><pre>" >>html/statistics.html
+        cloc --timeout 0 $SOURCE/${d}/ >>html/statistics.html
+    fi
+done
 
 echo "</pre></body></html>" >>html/statistics.html
 

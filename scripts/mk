@@ -61,6 +61,13 @@ TEST_SEED=
 CATCH_EXCEPTIONS=
 LAUNCHPAD=false
 
+PROJECT_NAME=`dpkg-parsechangelog --show-field Source`
+if test -z "${PROJECT_NAME}"
+then
+    echo "error: could not determine default project name."
+    exit 1
+fi
+
 # Retrieve the user default PROCESSORS=... and other variables
 if test -f ~/.build-snap.rc
 then
@@ -140,6 +147,7 @@ do
         fi
 
         echo "  --processors | -p <count> Change the number of processors."
+        echo "  --project <name>          Name of the project (default: \"${PROJECT_NAME}\")."
         echo "  --release | -r            Build the Release version."
         echo "  --sanitize | -s           Build the Sanitized version."
 
@@ -187,6 +195,17 @@ do
     "--processors"|"-p")
         shift
         PROCESSORS="${1}"
+        shift
+        ;;
+
+    "--project")
+        shift
+        if test -z "$1"
+        then
+            echo "error: project name is mandatory after --project"
+            exit 1
+        fi
+        PROJECT_NAME="$1"
         shift
         ;;
 
@@ -258,6 +277,27 @@ RESULT=${?}
 if [[ ${RESULT} != 0 ]]
 then
     echo "error: could not cd to OUTPUT directory \"${OUTPUT}\"."
+    exit 1
+fi
+
+if test -z "${UID}"
+then
+    echo "error: expected UID to be defined with your user identifier."
+    exit 1
+fi
+if test -z "${PROJECT_NAME}"
+then
+    echo "error: could not gather the name of the project, which is mandatory."
+    exit 1
+fi
+LOCK_FILE=/run/user/${UID}/mk-${PROJECT_NAME}.lock
+unlock_script() {
+    rm -f ${LOCK_FILE}
+}
+trap unlock_script EXIT
+if ! (set -o noclobber; echo > ${LOCK_FILE})
+then
+    echo "error: the \"mk\" for project ${PROJECT_NAME} script is currently running, second instance canceled."
     exit 1
 fi
 
