@@ -1,4 +1,4 @@
-snapcmakemodules (1.0.70.0~bionic) bionic; urgency=high
+snapcmakemodules (1.0.70.0~jammy) jammy; urgency=high
 
   * Added the --binary-dir argument to call unittest.
 
