@@ -392,7 +392,7 @@ echo "<html><head><title>${PROJECT_NAME} ${VERSION} statistics</title></head><bo
 #
 for d in ${PROJECT_NAME} daemon cmake scripts tools tests
 do
-    if test -d $SOURCE/${d}
+    if test -d ${SOURCE}/${d}
     then
         name=${d}
         if test "${d}" = "${PROJECT_NAME}"
