@@ -33,14 +33,15 @@
 #
 include( CMakeParseArguments )
 
-find_program( FIND_DEPS_SCRIPT      SnapFindDeps.pl                 PATHS ${CMAKE_MODULE_PATH} )
-find_program( INC_VERS_SCRIPT       SnapBuildIncVers.pl             PATHS ${CMAKE_MODULE_PATH} )
-find_program( INC_DEPS_SCRIPT       SnapBuildIncDeps.pl             PATHS ${CMAKE_MODULE_PATH} )
-find_program( MAKE_SOURCE_SCRIPT    SnapBuildMakeSourcePackage.sh   PATHS ${CMAKE_MODULE_PATH} )
-find_program( MAKE_DPUT_SCRIPT      SnapBuildDputPackage.sh         PATHS ${CMAKE_MODULE_PATH} )
-find_program( MAKE_DEPS_SCRIPT      SnapMakeDepsCache.pl            PATHS ${CMAKE_MODULE_PATH} )
-find_program( PBUILDER_SCRIPT       SnapPBuilder.sh                 PATHS ${CMAKE_MODULE_PATH} )
-find_program( REPREPRO_SCRIPT       SnapReprepro.sh                 PATHS ${CMAKE_MODULE_PATH} )
+find_program(FIND_DEPS_SCRIPT      SnapFindDeps.pl                 PATHS ${CMAKE_MODULE_PATH})
+find_program(INC_VERS_SCRIPT       SnapBuildIncVers.pl             PATHS ${CMAKE_MODULE_PATH})
+find_program(INC_DEPS_SCRIPT       SnapBuildIncDeps.pl             PATHS ${CMAKE_MODULE_PATH})
+find_program(MAKE_SOURCE_SCRIPT    SnapBuildMakeSourcePackage.sh   PATHS ${CMAKE_MODULE_PATH})
+find_program(MAKE_DPUT_SCRIPT      SnapBuildDputPackage.sh         PATHS ${CMAKE_MODULE_PATH})
+find_program(MAKE_DEPS_SCRIPT      SnapMakeDepsCache.pl            PATHS ${CMAKE_MODULE_PATH})
+find_program(PBUILDER_SCRIPT       SnapPBuilder.sh                 PATHS ${CMAKE_MODULE_PATH})
+find_program(REPREPRO_SCRIPT       SnapReprepro.sh                 PATHS ${CMAKE_MODULE_PATH})
+find_program(DOT_PROGRAM           dot                                                       )
 
 
 # RDB: Sun Jan  8 12:42:10 PST 2017
@@ -475,10 +476,12 @@ function( CreateTargets COMPONENT )
     if( ${COMPONENT} STREQUAL "top" )
         unset(COMP_SUFFIX)
 
-        execute_process(
-            COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/cmake/scripts/simplify-dependencies.py ${CMAKE_BINARY_DIR}
-            WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
-            OUTPUT_FILE "${CMAKE_BINARY_DIR}/clean-dependencies.svg")
+        if(${DOT_PROGRAM_FOUND})
+            execute_process(
+                COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/cmake/scripts/simplify-dependencies.py ${CMAKE_BINARY_DIR}
+                WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
+                OUTPUT_FILE "${CMAKE_BINARY_DIR}/clean-dependencies.svg")
+        endif()
     else()
         set( COMP_SUFFIX "-${COMPONENT}" )
     endif()
