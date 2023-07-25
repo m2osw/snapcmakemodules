@@ -476,7 +476,7 @@ function( CreateTargets COMPONENT )
     if( ${COMPONENT} STREQUAL "top" )
         unset(COMP_SUFFIX)
 
-        if(${DOT_PROGRAM_FOUND})
+        if(${DOT_PROGRAM})
             execute_process(
                 COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/cmake/scripts/simplify-dependencies.py ${CMAKE_BINARY_DIR}
                 WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
