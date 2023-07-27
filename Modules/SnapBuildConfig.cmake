@@ -473,17 +473,17 @@ function( CreateTargets COMPONENT )
     get_property( PBUILDER_TARGETS GLOBAL PROPERTY PBUILDER_TARGETS )
     get_property( REPREPRO_TARGETS GLOBAL PROPERTY REPREPRO_TARGETS )
 
-    if( ${COMPONENT} STREQUAL "top" )
+    if(${COMPONENT} STREQUAL "top")
         unset(COMP_SUFFIX)
 
-        if(${DOT_PROGRAM})
+        if(DOT_PROGRAM)
             execute_process(
                 COMMAND python3 ${CMAKE_CURRENT_SOURCE_DIR}/cmake/scripts/simplify-dependencies.py ${CMAKE_BINARY_DIR}
                 WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
                 OUTPUT_FILE "${CMAKE_BINARY_DIR}/clean-dependencies.svg")
         endif()
     else()
-        set( COMP_SUFFIX "-${COMPONENT}" )
+        set(COMP_SUFFIX "-${COMPONENT}")
     endif()
 
     add_custom_target( build${COMP_SUFFIX} ALL

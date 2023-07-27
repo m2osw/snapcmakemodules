@@ -112,6 +112,7 @@ def main():
     output_path = options.workdir[0]
 
     projects = load_projects(output_path)
+    print('Found ' + str(len(projects)) + ' projects in dependency graph.')
     simplify_projects(projects)
     output = output_dot(projects)
 
@@ -119,6 +120,7 @@ def main():
         f.write(output)
 
     os.system('dot -Tsvg <' + output_path + '/clean-dependencies.dot >' + output_path + '/clean-dependencies.svg')
+    print('Dependency graph generated in "' + output_path + '/clean-dependencies.svg".')
 
 if __name__ == '__main__':
     main()
