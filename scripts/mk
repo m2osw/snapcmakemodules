@@ -57,6 +57,7 @@ COVERAGE=
 TEST=false
 TEST_DBG=false
 TESTS="${TEST_OPTIONS}"        # TEST_OPTIONS can be defined by the project to add default options to always use along the unittest
+TEST_LIST=
 TEST_SEED=
 CATCH_EXCEPTIONS=
 LAUNCHPAD=false
@@ -153,6 +154,7 @@ do
 
         if test -d tests
         then
+            echo "  --list-tests [tests|tags] List available tests."
             echo "  --seed <seed>             Define the seed."
             echo "  --test | -t [<name> ...]  Build and then run the tests."
             echo "                            Tests names can be written separated by commas"
@@ -174,6 +176,29 @@ do
     "--less"|"-l")
         shift
         LESS=true
+        ;;
+
+    "--list-tests")
+        if test ! -d tests
+        then
+            echo "error: no tests folder detected; option not available."
+            exit 1
+        fi
+        shift
+        TEST_LIST=
+        while [[ "${1}" != "" && "${1}" != "-"* ]]
+        do
+            if test -n "${TEST_LIST}"
+            then
+                TEST_LIST="${TEST_LIST} "
+            fi
+            TEST_LIST="${TEST_LIST}--list-${1}"
+            shift
+        done
+        if test -z "${TEST_LIST}"
+        then
+            TEST_LIST="--list-tests"
+        fi
         ;;
 
     "--packages"|"-b")
@@ -395,6 +420,14 @@ process() {
             echo "error: coverage script failed."
             return 1
         fi
+    elif test -n "${TEST_LIST}"
+    then
+        ${OUTPUT}/tests/unittest \
+            --colour-mode ansi \
+            --tmp-dir "${PROJECT_TMPDIR}" \
+            --binary-dir "${BINARY_DIR}" \
+            --source-dir "${SOURCE}" \
+            ${TEST_LIST}
     elif ${TEST}
     then
         echo "${OUTPUT}/tests/unittest --tmp-dir "${PROJECT_TMPDIR}" --binary-dir "${BINARY_DIR}" --source-dir "${SOURCE}" ${PROJECT_TEST_ARGS} ${TEST_SEED} --progress ${TESTS}"
