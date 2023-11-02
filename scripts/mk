@@ -12,6 +12,11 @@
 # using at compile time (See contrib/sitter/mk for details):
 #
 #    export PATH="`cd ../../BUILD/Debug/contrib/advgetopt/tools && pwd`:${PATH}"
+#
+# You can define additional options to run the tests:
+#
+#    export TEST_OPTIONS="--extra-option value1,value2"
+#
 
 
 ##
@@ -56,7 +61,7 @@ DOCS=false
 COVERAGE=
 TEST=false
 TEST_DBG=false
-TESTS="${TEST_OPTIONS}"        # TEST_OPTIONS can be defined by the project to add default options to always use along the unittest
+TESTS=
 TEST_LIST=
 TEST_SEED=
 CATCH_EXCEPTIONS=
@@ -413,7 +418,12 @@ process() {
 
     if test -n "${COVERAGE}"
     then
-        ${COVERAGE} ${TESTS}
+        if test -n "${TEST_OPTIONS}"
+        then
+            ${COVERAGE} --args "--progress ${TEST_OPTIONS}" ${TESTS}
+        else
+            ${COVERAGE} ${TESTS}
+        fi
         RESULT=${?}
         if [[ ${RESULT} -ne 0 ]]
         then
@@ -430,7 +440,7 @@ process() {
             ${TEST_LIST}
     elif ${TEST}
     then
-        echo "${OUTPUT}/tests/unittest --tmp-dir "${PROJECT_TMPDIR}" --binary-dir "${BINARY_DIR}" --source-dir "${SOURCE}" ${PROJECT_TEST_ARGS} ${TEST_SEED} --progress ${TESTS}"
+        echo "${OUTPUT}/tests/unittest --tmp-dir \"${PROJECT_TMPDIR}\" --binary-dir \"${BINARY_DIR}\" --source-dir \"${SOURCE}\" ${PROJECT_TEST_ARGS} ${TEST_SEED} --progress ${TESTS} ${TEST_OPTIONS}"
         if ${TEST_DBG}
         then
             gdb ${CATCH_EXCEPTIONS} \
@@ -442,6 +452,7 @@ process() {
                     ${PROJECT_TEST_ARGS} \
                     ${TEST_SEED} \
                     --progress \
+                    ${TEST_OPTIONS} \
                         ${TESTS}
 
             # the check of the result in this case is not quite relevant
@@ -464,6 +475,7 @@ process() {
                 ${PROJECT_TEST_ARGS} \
                 ${TEST_SEED} \
                 --progress \
+                ${TEST_OPTIONS} \
                     ${TESTS} | tee ${OUTPUT}/tests/tests.log
         RESULT=${PIPESTATUS[0]}
         echo "info: test logs were saved in: \"${OUTPUT}/tests/tests.log\"."
