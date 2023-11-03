@@ -59,7 +59,7 @@ if( ${CMAKE_VERSION} VERSION_GREATER 3.0.0 )
     # The question is if we want to try num procs + 1.
     #
     #math( EXPR NUM_JOBS "${NUM_PROCS} + 1" )
-    set( MAKEFLAGS "-j${NUM_JOBS}" CACHE STRING "Number of jobs make should run. CMake vers 3+ only!" )
+    set( MAKEFLAGS "-j${NUM_JOBS}" CACHE STRING "Number of jobs make should run in parallel. CMake vers 3+ only!" )
     if( NOT "${MAKEFLAGS}" STREQUAL "-j1" OR "${MAKEFLAGS}" STREQUAL "" )
         set( THE_CMAKE_BUILD_TOOL ${CMAKE_COMMAND} -E env MAKEFLAGS=\"${MAKEFLAGS}\" ${CMAKE_BUILD_TOOL} )
     endif()
