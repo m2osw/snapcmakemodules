@@ -5,7 +5,7 @@
 # Author: Alexis Wilke
 #
 # This perl script opens a project's debian control file and lists the name
-# of each of the packages.
+# of each of the packages and their architecture.
 #
 # This is currently used by the snapbuilder tool.
 #
@@ -52,8 +52,8 @@ my @control_pkgs = $dep_ctl->get_packages();
 foreach my $p (@control_pkgs)
 {
     my $pkg = $p->{"Package"};
-    print "$pkg ";
+    my $arch = $p->{"Architecture"};
+    print "$pkg $arch\n";
 }
-print "\n";
 
 # vim: ts=4 sw=4 et
