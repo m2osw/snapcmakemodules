@@ -106,7 +106,7 @@ do
     "--help"|"-h")
         echo "Usage: $0 [--opt] <test-name or tag> ..."
         echo "where --opt is one of:"
-        echo "   --args <extra-arguments>"
+        echo "   --args \"<extra-arguments>\""
         echo "                  replace the list of additional argments to run the tests"
         echo "   --help | -h    display this help screen"
         echo "   --processors <count>"
@@ -295,13 +295,13 @@ echo "*** run (`date`)"
 echo "***"
 
 # First we verify the version to make sure that works as expected
-UNITTEXT_VERSION=`BUILD/tests/unittest \
+UNITTEST_VERSION=`BUILD/tests/unittest \
                         --source-dir "${SOURCE}" \
                         --tmp-dir "${PROJECT_BINDIR}/tmp" \
                         --version`
-if test "${UNITTEXT_VERSION}" != "${VERSION}"
+if test "${UNITTEST_VERSION}" != "${VERSION}"
 then
-    echo "the version of unittest (${UNITTEXT_VERSION}) is not equal to the project version (${VERSION})"
+    echo "the version of unittest (${UNITTEST_VERSION}) is not equal to the project version (${VERSION})"
     exit 1
 fi
 
@@ -313,7 +313,7 @@ fi
 # ARGS is defined after --args, it defaults to --progress
 # TESTS is defined after --test, more than one name can be specified.
 #
-echo "Start running ${PROJECT_NAME} tests v${UNITTEXT_VERSION} on `date`" >test_log.txt
+echo "Start running ${PROJECT_NAME} tests v${UNITTEST_VERSION} on `date`" >test_log.txt
 echo >>test_log.txt
 set -x
 OUTPUT=`cd BUILD; pwd`
@@ -328,7 +328,7 @@ BUILD/tests/unittest \
     ${TESTS} 2>&1 | tee -a test_log.txt; test ${PIPESTATUS[0]} -eq 0
 set +x
 echo >>test_log.txt
-echo "Finished running ${PROJECT_NAME} tests v${UNITTEXT_VERSION} on `date`" >>test_log.txt
+echo "Finished running ${PROJECT_NAME} tests v${UNITTEST_VERSION} on `date`" >>test_log.txt
 
 
 
