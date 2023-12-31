@@ -359,7 +359,8 @@ genhtml \
     --demangle-cpp \
     --no-branch-coverage \
     --show-details coverage.info \
-    --output-directory html
+    --output-directory html \
+    --html-epilog "${SCRIPTS}/coverage-epilog.html"
 
 
 #
