@@ -63,6 +63,15 @@ ARGS="--progress"
 TESTS=
 PUBLISH_DIR=
 
+if test -f "${SOURCE}/tests/sanitizer-options.sh"
+then
+    # It exists, source it
+    #
+    . ${SOURCE}/tests/sanitizer-options.sh
+
+    # TODO: check for suppress-leaks.txt files in all dependencies
+fi
+
 # Source the user defined .build-snap.rc file
 # In most cases this is used to define the PROCESSORS variable
 # and the PUBLISH_DIR which is likely different on your system
