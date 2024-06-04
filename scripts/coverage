@@ -1,6 +1,6 @@
 #!/bin/bash -e
 #
-# Copyright (c) 2013-2023  Made to Order Software Corp.  All Rights Reserved
+# Copyright (c) 2013-2024  Made to Order Software Corp.  All Rights Reserved
 #
 # https://snapwebsites.org/project/snap-cmake-modules
 # contact@m2osw.com
@@ -328,6 +328,7 @@ set -x
 OUTPUT=`cd BUILD; pwd`
 BUILD/tests/unittest \
     --binary-dir "${OUTPUT}" \
+    --dist-dir "${DIST}" \
     --source-dir "${SOURCE}" \
     --tmp-dir "${PROJECT_BINDIR}/tmp" \
     --warn NoAssertions \

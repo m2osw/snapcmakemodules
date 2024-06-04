@@ -303,6 +303,7 @@ OUTPUT="${BUILD}/${TYPE}/${CONTRIBDIR}${PROJECT}"
 PROJECT_TMPDIR="${OUTPUT}/tmp"
 
 BINARY_DIR="`cd ${OUTPUT} && pwd`"
+DIST_DIR="`cd ${BUILD}/${TYPE}/dist && pwd`"
 RESULT=${?}
 if [[ ${RESULT} != 0 ]]
 then
@@ -436,11 +437,12 @@ process() {
             --colour-mode ansi \
             --tmp-dir "${PROJECT_TMPDIR}" \
             --binary-dir "${BINARY_DIR}" \
+            --dist-dir "${DIST_DIR}" \
             --source-dir "${SOURCE}" \
             ${TEST_LIST}
     elif ${TEST}
     then
-        echo "${OUTPUT}/tests/unittest --tmp-dir \"${PROJECT_TMPDIR}\" --binary-dir \"${BINARY_DIR}\" --source-dir \"${SOURCE}\" ${PROJECT_TEST_ARGS} ${TEST_SEED} --progress ${TESTS} ${TEST_OPTIONS}"
+        echo "${OUTPUT}/tests/unittest --tmp-dir \"${PROJECT_TMPDIR}\" --binary-dir \"${BINARY_DIR}\" --dist-dir \"${DIST_DIR}\" --source-dir \"${SOURCE}\" ${PROJECT_TEST_ARGS} ${TEST_SEED} --progress ${TESTS} ${TEST_OPTIONS}"
         if ${TEST_DBG}
         then
             gdb ${CATCH_EXCEPTIONS} \
@@ -448,6 +450,7 @@ process() {
                 --args ${OUTPUT}/tests/unittest \
                     --tmp-dir "${PROJECT_TMPDIR}" \
                     --binary-dir "${BINARY_DIR}" \
+                    --dist-dir "${DIST_DIR}" \
                     --source-dir "${SOURCE}" \
                     ${PROJECT_TEST_ARGS} \
                     ${TEST_SEED} \
@@ -471,6 +474,7 @@ process() {
                 --colour-mode ansi \
                 --tmp-dir "${PROJECT_TMPDIR}" \
                 --binary-dir "${BINARY_DIR}" \
+                --dist-dir "${DIST_DIR}" \
                 --source-dir "${SOURCE}" \
                 ${PROJECT_TEST_ARGS} \
                 ${TEST_SEED} \
