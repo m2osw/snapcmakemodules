@@ -252,6 +252,7 @@ mkdir BUILD
     mkdir VERSION
     cd VERSION
     echo 'cmake_minimum_required(VERSION 3.10)' >CMakeLists.txt
+    echo 'project(capture_cmake_version)' >>CMakeLists.txt
     echo 'string(REPLACE "/usr/" "" SNAP_CMAKE_MODULES_DIR "${CMAKE_ROOT}")' >>CMakeLists.txt
     echo 'message("SNAP_CMAKE_MODULES_DIR=${SNAP_CMAKE_MODULES_DIR}")' >>CMakeLists.txt
     cmake . >path.txt 2>&1
