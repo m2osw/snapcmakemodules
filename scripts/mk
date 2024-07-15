@@ -162,7 +162,7 @@ do
             echo "  --list-tests [tests|tags] List available tests."
             echo "  --seed <seed>             Define the seed."
             echo "  --test | -t [<name> ...]  Build and then run the tests."
-            echo "                            Tests names can be written separated by commas"
+            echo "                            Test names can be written separated by commas"
             echo "                            in which case you cannot include any spaces:"
             echo "                               -t a b c   or   -t a,b,c"
             echo "  --tg [<name> ...]         Like --test but run the tests with the debugger."
