@@ -2,7 +2,7 @@
 # Display this directory to users
 # (code used to display test results)
 #
-# Copyright (c) 2011-2023  Made to Order Software Corp.  All Rights Reserved
+# Copyright (c) 2011-2024  Made to Order Software Corp.  All Rights Reserved
 #
 # https://snapwebsites.org/project/snapcmakemodules
 # contact@m2osw.com
