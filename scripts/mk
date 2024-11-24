@@ -363,19 +363,19 @@ fi
 
 if ${TEST_DBG} && ${LESS}
 then
-    echo "error: --tg (run tests in gdb) and -l (output to less) can't be used togeter."
+    echo "error: --tg (run tests in gdb) and -l (output to less) can't be used together."
     exit 1
 fi
 
 if ${TEST_DBG} && -n ${COVERAGE}
 then
-    echo "error: --tg (run tests in gdb) and --coverage can't be used togeter."
+    echo "error: --tg (run tests in gdb) and --coverage can't be used together."
     exit 1
 fi
 
 if ${TEST_DBG} && ${LAUNCHPAD}
 then
-    echo "error: --tg (run tests in gdb) and --packages (send to launchpad) can't be used togeter."
+    echo "error: --tg (run tests in gdb) and --packages (send to launchpad) can't be used together."
     exit 1
 fi
 

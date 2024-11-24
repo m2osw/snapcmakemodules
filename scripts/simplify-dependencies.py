@@ -19,6 +19,9 @@ class UnexpectedInput(Exception):
 class NotFound(Exception):
     pass
 
+class DifferentDefinitions(Exception):
+    pass
+
 class Project(object):
 
     def __init__(self, name, deps):
@@ -42,7 +45,7 @@ def safe_name(name):
   return name
 
 def load_projects(path):
-    projects = []
+    projects = {}
     with open(path + '/deps.make') as f:
         for line in f:
             line = line.strip()
@@ -56,18 +59,23 @@ def load_projects(path):
             deps = []
             if len(target_deps) > 1:
                 deps = target_deps[1].split()
-            projects.append(Project(target_deps[0], deps))
+            deps.sort()
+            if target_deps[0] in projects:
+                if projects[target_deps[0]].get_deps() != deps:
+                    print("Found \"", target_deps[0], "\" with dependencies \"", projects[target_deps[0]].get_deps(), "\" and a second instance with dependencies \"", deps, "\".", sep='')
+                    raise DifferentDefinitions()
+            else:
+                projects[target_deps[0]] = Project(target_deps[0], deps)
 
     return projects
 
 def find_project(projects, name):
-    for p in projects:
-        if p.get_name() == name:
-            return p
+    if name in projects:
+        return projects[name]
     raise NotFound
 
 def simplify_projects(projects):
-    for p in projects:
+    for name, p in projects.items():
         deps = p.get_deps().copy()
         idx = 0
         while idx < len(deps):
@@ -82,18 +90,18 @@ def simplify_projects(projects):
 def output_dot(projects):
     output = ''
     output += 'digraph dependencies {\n'
-    for p in projects:
+    for name, p in projects.items():
         output += '    '
-        output += safe_name(p.get_name())
+        output += safe_name(name)
         if len(p.get_deps()) > 0:
             output += ' [shape=box];\n'
         else:
             output += ' [shape=ellipse];\n'
-    for p in projects:
+    for name, p in projects.items():
         deps = p.get_deps()
         for d in deps:
             output += '    '
-            output += safe_name(p.get_name())
+            output += safe_name(name)
             output += ' -> '
             output += safe_name(d)
             output += ';\n'
