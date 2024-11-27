@@ -298,11 +298,18 @@ OUTPUT="${BUILD}/${TYPE}/${CONTRIBDIR}${PROJECT}"
 PROJECT_TMPDIR="${OUTPUT}/tmp"
 
 BINARY_DIR="`cd ${OUTPUT} && pwd`"
-DIST_DIR="`cd ${BUILD}/${TYPE}/dist && pwd`"
 RESULT=${?}
 if [[ ${RESULT} != 0 ]]
 then
     echo "error: could not cd to OUTPUT directory \"${OUTPUT}\"."
+    exit 1
+fi
+
+DIST_DIR="`cd ${BUILD}/${TYPE}/dist && pwd`"
+RESULT=${?}
+if [[ ${RESULT} != 0 ]]
+then
+    echo "error: could not cd to DIST directory \"${BUILD}/${TYPE}/dist\"."
     exit 1
 fi
 

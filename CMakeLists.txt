@@ -33,11 +33,12 @@ install(
 
 set(MODULES_LIST
     DumpCMakeVariables
-    Magic
     LibQREncode
+    Magic
     SnapBuild
     SnapCMakeModules
     SnapDoxygen
+    SnapTestRunner
 )
 
 foreach(_module ${MODULES_LIST})
@@ -52,7 +53,7 @@ endforeach()
 
 file(GLOB SCRIPTS Modules/*.sh Modules/*.pl)
 install(
-    FILES
+    PROGRAMS
         ${SCRIPTS}
 
     DESTINATION
