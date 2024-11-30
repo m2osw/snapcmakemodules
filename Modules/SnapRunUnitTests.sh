@@ -33,15 +33,16 @@
 ################################################################################
 #
 
+EXTRA_OPTIONS=
 while test -n "$1"
 do
 	case "$1" in
 	"--help"|"-h")
 		echo "Usage: `basename $0` --opts"
 		echo "where --opts are:"
-		echo "  --help | -h                print out this help screen"
 		echo "  --binary-dir <dir>         path to this project top binary directory"
 		echo "  --extra-options <opts>     a set of additional options"
+		echo "  --help | -h                print out this help screen"
 		echo "  --source-dir <dir>         path to this project top source directory"
 		echo "  --unittest-ran <filename>  name of the dependency to generate on success (usually the PROJECT_NAME)"
 		exit 1
@@ -56,7 +57,10 @@ do
 	"--extra-options")
 		shift
 		EXTRA_OPTIONS="$1"
-		shift
+		if test -n "${EXTRA_OPTIONS}"
+		then
+			shift
+		fi
 		;;
 
 	"--source-dir")

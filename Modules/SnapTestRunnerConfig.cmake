@@ -70,6 +70,7 @@ function(AddUnitTestsTarget)
 
     set(UNITTEST_RAN ${PROJECT_BINARY_DIR}/${ARG_PROJECT_NAME})
 
+    list(JOIN ARG_PROJECT_TEST_ARGS " " EXTRA_TEST_ARGS)
     add_custom_command(
         OUTPUT
             "${UNITTEST_RAN}"
@@ -79,7 +80,7 @@ function(AddUnitTestsTarget)
                 "--binary-dir" "${CMAKE_BINARY_DIR}"
                 "--source-dir" "${CMAKE_SOURCE_DIR}"
                 "--unittest-ran" "${UNITTEST_RAN}"
-                "--extra-options" "${ARG_PROJECT_TEST_ARGS} ${EXTRA_OPTIONS}"
+                "--extra-options" "${EXTRA_TEST_ARGS} ${EXTRA_OPTIONS}"
 
         WORKING_DIRECTORY
             ${CMAKE_BINARY_DIR}
