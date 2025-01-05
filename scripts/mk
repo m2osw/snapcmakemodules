@@ -207,12 +207,6 @@ do
             echo "error: build on launchpad not available, debian folder not found."
             exit 1
         fi
-        read -p "Are you sure you are ready to build on Launchpad? (y/[N]) " answer
-        if test "${answer}" != "y" -a "${answer}" != "Y"
-        then
-            echo "warning: the build was not approved."
-            exit 1
-        fi
         shift
         LAUNCHPAD=true
         ;;
@@ -368,24 +362,39 @@ then
     DOCS=true
 fi
 
-if ${TEST_DBG} && ${LESS}
+if ${LESS} && test -n "${COVERAGE}"
 then
-    echo "error: --tg (run tests in gdb) and -l (output to less) can't be used together."
+    echo "error: --coverage and --less cannot be used together."
     exit 1
 fi
 
-if ${TEST_DBG} && -n ${COVERAGE}
+if ${TEST_DBG} && ${LESS}
 then
-    echo "error: --tg (run tests in gdb) and --coverage can't be used together."
+    echo "error: --tg (run tests in gdb) and --less cannot be used together."
+    exit 1
+fi
+
+if ${TEST_DBG} && test -n "${COVERAGE}"
+then
+    echo "error: --tg (run tests in gdb) and --coverage cannot be used together."
     exit 1
 fi
 
 if ${TEST_DBG} && ${LAUNCHPAD}
 then
-    echo "error: --tg (run tests in gdb) and --packages (send to launchpad) can't be used together."
+    echo "error: --tg (run tests in gdb) and --packages (send to launchpad) cannot be used together."
     exit 1
 fi
 
+if ${LAUNCHPAD}
+then
+    read -p "Are you sure you are ready to build on Launchpad? (y/[N]) " answer
+    if test "${answer}" != "y" -a "${answer}" != "Y"
+    then
+        echo "warning: the build was not approved."
+        exit 1
+    fi
+fi
 
 process() {
     ##
@@ -519,6 +528,10 @@ if [[ ${RESULT} -ne 0 ]]
 then
     echo
     echo "Build, Tests/Coverage, or Upload failed."
+    if test -n "${COVERAGE}"
+    then
+        echo "Test output is here: ${BINARY_DIR}/coverage/test_log.txt"
+    fi
     exit 1
 fi
 
