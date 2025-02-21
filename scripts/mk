@@ -432,9 +432,9 @@ process() {
     then
         if test -n "${TEST_OPTIONS}"
         then
-            ${COVERAGE} --args "--progress ${TEST_OPTIONS}" ${TESTS}
+            ${COVERAGE} --args "--progress ${TEST_OPTIONS}" "${TESTS}"
         else
-            ${COVERAGE} ${TESTS}
+            ${COVERAGE} "${TESTS}"
         fi
         RESULT=${?}
         if [[ ${RESULT} -ne 0 ]]
@@ -442,23 +442,53 @@ process() {
             echo "error: coverage script failed."
             return 1
         fi
-    elif test -n "${TEST_LIST}"
-    then
-        ${OUTPUT}/tests/unittest \
-            --colour-mode ansi \
-            --tmp-dir "${PROJECT_TMPDIR}" \
-            --binary-dir "${BINARY_DIR}" \
-            --dist-dir "${DIST_DIR}" \
-            --source-dir "${SOURCE}" \
-            ${TEST_LIST}
-    elif ${TEST}
-    then
-        echo "${OUTPUT}/tests/unittest --tmp-dir \"${PROJECT_TMPDIR}\" --binary-dir \"${BINARY_DIR}\" --dist-dir \"${DIST_DIR}\" --source-dir \"${SOURCE}\" ${PROJECT_TEST_ARGS} ${TEST_SEED} --progress ${TESTS} ${TEST_OPTIONS}"
-        if ${TEST_DBG}
+    else
+        if test "${TYPE}" = "Sanitize" -a -f "${SOURCE}/tests/sanitizer-options.sh"
         then
-            gdb ${CATCH_EXCEPTIONS} \
-                -ex 'run' \
-                --args ${OUTPUT}/tests/unittest \
+            . ${SOURCE}/tests/sanitizer-options.sh
+        fi
+
+        if test -n "${TEST_LIST}"
+        then
+            ${OUTPUT}/tests/unittest \
+                --colour-mode ansi \
+                --tmp-dir "${PROJECT_TMPDIR}" \
+                --binary-dir "${BINARY_DIR}" \
+                --dist-dir "${DIST_DIR}" \
+                --source-dir "${SOURCE}" \
+                ${TEST_LIST}
+        elif ${TEST}
+        then
+            echo "${OUTPUT}/tests/unittest --tmp-dir \"${PROJECT_TMPDIR}\" --binary-dir \"${BINARY_DIR}\" --dist-dir \"${DIST_DIR}\" --source-dir \"${SOURCE}\" ${PROJECT_TEST_ARGS} ${TEST_SEED} --progress \"${TESTS}\" ${TEST_OPTIONS}"
+            if ${TEST_DBG}
+            then
+                gdb ${CATCH_EXCEPTIONS} \
+                    -ex 'run' \
+                    --args ${OUTPUT}/tests/unittest \
+                        --tmp-dir "${PROJECT_TMPDIR}" \
+                        --binary-dir "${BINARY_DIR}" \
+                        --dist-dir "${DIST_DIR}" \
+                        --source-dir "${SOURCE}" \
+                        ${PROJECT_TEST_ARGS} \
+                        ${TEST_SEED} \
+                        --progress \
+                        ${TEST_OPTIONS} \
+                            "${TESTS}"
+
+                # the check of the result in this case is not quite relevant
+                echo "info: gdb exited."
+                return 0
+            fi
+
+            BIGTIME=""
+            if test "${VERBOSE}" = "1"
+            then
+                BIGTIME="--verbose"
+            fi
+
+            /usr/bin/time ${BIGTIME} \
+                ${OUTPUT}/tests/unittest \
+                    --colour-mode ansi \
                     --tmp-dir "${PROJECT_TMPDIR}" \
                     --binary-dir "${BINARY_DIR}" \
                     --dist-dir "${DIST_DIR}" \
@@ -467,37 +497,14 @@ process() {
                     ${TEST_SEED} \
                     --progress \
                     ${TEST_OPTIONS} \
-                        ${TESTS}
-
-            # the check of the result in this case is not quite relevant
-            echo "info: gdb exited."
-            return 0
-        fi
-
-        BIGTIME=""
-        if test "${VERBOSE}" = "1"
-        then
-            BIGTIME="--verbose"
-        fi
-
-        /usr/bin/time ${BIGTIME} \
-            ${OUTPUT}/tests/unittest \
-                --colour-mode ansi \
-                --tmp-dir "${PROJECT_TMPDIR}" \
-                --binary-dir "${BINARY_DIR}" \
-                --dist-dir "${DIST_DIR}" \
-                --source-dir "${SOURCE}" \
-                ${PROJECT_TEST_ARGS} \
-                ${TEST_SEED} \
-                --progress \
-                ${TEST_OPTIONS} \
-                    ${TESTS} | tee ${OUTPUT}/tests/tests.log
-        RESULT=${PIPESTATUS[0]}
-        echo "info: test logs were saved in: \"${OUTPUT}/tests/tests.log\"."
-        if [[ ${RESULT} -ne 0 ]]
-        then
-            echo "error: test(s) failed."
-            return 1
+                        "${TESTS}" | tee ${OUTPUT}/tests/tests.log
+            RESULT=${PIPESTATUS[0]}
+            echo "info: test logs were saved in: \"${OUTPUT}/tests/tests.log\"."
+            if [[ ${RESULT} -ne 0 ]]
+            then
+                echo "error: test(s) failed."
+                return 1
+            fi
         fi
     fi
 
