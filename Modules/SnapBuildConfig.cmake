@@ -180,15 +180,15 @@ function( ConfigureMakeProjectInternal )
     # This uses the information in each debian/control file to sort out the
     # build dependencies.
     #
-    if( ARG_IGNORE_DEPS )
-        unset( DEPENDS_LIST )
+    if(ARG_IGNORE_DEPS)
+        unset(DEPENDS_LIST)
     else()
-        get_property( DEPENDS_LIST
+        get_property(DEPENDS_LIST
             GLOBAL PROPERTY ${ARG_PROJECT_NAME}_DEPENDS_LIST
         )
     endif()
-    if( ARG_USE_CONFIGURE_SCRIPT )
-        set( CONFIGURE_TARGETS ${BUILD_DIR}/config.log )
+    if(ARG_USE_CONFIGURE_SCRIPT)
+        set(CONFIGURE_TARGETS ${BUILD_DIR}/config.log)
         add_custom_command(
             OUTPUT ${CONFIGURE_TARGETS}
             COMMAND ${BUILD_DIR}/configure --prefix=${SNAP_DIST_DIR} ${ARG_CONFIG_ARGS}
@@ -199,16 +199,21 @@ function( ConfigureMakeProjectInternal )
             COMMENT "Running ${ARG_TARGET_NAME} configure script..."
         )
     else()
-        set( SNAP_CMAKE_GENERATOR "CodeBlocks - Unix Makefiles" CACHE STRING "CMake generator to use to configure all projects. Defaults to CodeBlocks, which is qtcreator friendly." )
-        set( BUILD_TYPE ${CMAKE_BUILD_TYPE} )
-        if( NOT BUILD_TYPE )
-            set( BUILD_TYPE Release )
+        # The CodeBlocks has been deprecated; at the moment I'm not too sure
+        # what replaces that one; see:
+        #     man cmake-generators
+        #     man cmake-file-api
+        #set( SNAP_CMAKE_GENERATOR "CodeBlocks - Unix Makefiles" CACHE STRING "CMake generator to use to configure all projects. Defaults to CodeBlocks, which is qtcreator friendly." )
+        set(SNAP_CMAKE_GENERATOR "Unix Makefiles" CACHE STRING "Generate standard Unix Makefiles." )
+        set(BUILD_TYPE ${CMAKE_BUILD_TYPE})
+        if(NOT BUILD_TYPE)
+            set(BUILD_TYPE Release)
         endif()
-        unset( SANITIZE_OPT )
-        option( SANITIZE "Sanitize addresses for ${PROJECT_NAME}. Debug mode only." OFF )
-        if( "${CMAKE_BUILD_TYPE}" STREQUAL "Debug" )
-            if( ${SANITIZE} )
-                set( SANITIZE_OPT "-DSANITIZE:BOOL=TRUE" )
+        unset(SANITIZE_OPT)
+        option(SANITIZE "Sanitize addresses for ${PROJECT_NAME}. Debug mode only." OFF)
+        if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+            if(${SANITIZE})
+                set(SANITIZE_OPT "-DSANITIZE:BOOL=TRUE")
             endif()
         endif()
 
