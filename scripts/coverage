@@ -397,26 +397,30 @@ gprof \
 END_DATE=`date`
 
 # Statistics
-echo "<html><head><title>${PROJECT_NAME} ${VERSION} statistics</title></head><body>" >html/statistics.html
+if test -x /usr/bin/cloc
+then
+    echo "<html><head><title>${PROJECT_NAME} ${VERSION} statistics</title></head><body>" >html/statistics.html
 
-# TODO: look at determining the list of folders dynamically (maybe by finding
-#       those with .cpp, .h, .cmake, etc.)
-#
-for d in ${PROJECT_NAME} daemon cmake scripts tools tests
-do
-    if test -d ${SOURCE}/${d}
-    then
-        name=${d}
-        if test "${d}" = "${PROJECT_NAME}"
+    # TODO: look at determining the list of folders dynamically (maybe by finding
+    #       those with .cpp, .h, .cmake, etc.)
+    #
+    for d in ${PROJECT_NAME}* cli cmake daemon scripts tests tools
+    do
+        if test -d ${SOURCE}/${d}
         then
-            name=library
+            name=${d}
+            if test "${d}" = "${PROJECT_NAME}"
+            then
+                name=library
+            fi
+            echo "<h3>Statistics of the ${PROJECT_NAME} v${VERSION} ${name}</h3><pre>" >>html/statistics.html
+            cloc --timeout 0 $SOURCE/${d}/ >>html/statistics.html
+            echo "</pre>" >>html/statistics.html
         fi
-        echo "<h3>Statistics of the ${PROJECT_NAME} v${VERSION} ${name}</h3><pre>" >>html/statistics.html
-        cloc --timeout 0 $SOURCE/${d}/ >>html/statistics.html
-    fi
-done
+    done
 
-echo "</pre></body></html>" >>html/statistics.html
+    echo "</body></html>" >>html/statistics.html
+fi
 
 # CMake output (Logs)
 echo "<html><head><title>${PROJECT_NAME} $VERSION test logs</title></head><body><h3>Logs for the ${PROJECT_NAME} $VERSION cmake generator</h3><p>Tests started on ${START_DATE} and finished on ${END_DATE}</p><pre>" >html/cmake_log.html
