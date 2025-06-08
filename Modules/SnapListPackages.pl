@@ -11,7 +11,7 @@
 #
 ################################################################################
 #
-# Copyright (c) 2023-2024  Made to Order Software Corp.  All Rights Reserved
+# Copyright (c) 2023-2025  Made to Order Software Corp.  All Rights Reserved
 #
 # http://snapwebsites.org/
 # contact@m2osw.com
