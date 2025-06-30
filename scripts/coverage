@@ -357,6 +357,7 @@ lcov \
     --no-external \
     --directory BUILD \
     --base-directory "${SOURCE}" \
+    --ignore-errors mismatch \
     --output-file coverage.info
 
 
@@ -364,6 +365,10 @@ lcov \
 # OUTPUT RESULTS
 #
 
+echo
+echo "***"
+echo "*** generate coverage HTML (`date`)"
+echo "***"
 mkdir -p html
 genhtml \
     --legend \
