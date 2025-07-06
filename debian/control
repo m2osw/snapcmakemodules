@@ -2,14 +2,13 @@ Source: snapcmakemodules
 Priority: extra
 Maintainer: R. Douglas Barbieri <doug@dooglio.net>
 Build-Depends: cmake,
-    debhelper,
+    debhelper-compat (= 15),
     reprepro
 Standards-Version: 3.9.4
 Section: libs
 Homepage: http://snapwebsites.org/
 Vcs-Git: git://git.code.sf.net/p/snapcpp/code
 Vcs-Browser: http://sourceforge.net/p/snapcpp/code/ci/master/tree/snapCMakeModules/
-X-DH-Compat: 15
 
 Package: snapcmakemodules
 Section: devel
