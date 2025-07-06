@@ -9,6 +9,7 @@ Section: libs
 Homepage: http://snapwebsites.org/
 Vcs-Git: git://git.code.sf.net/p/snapcpp/code
 Vcs-Browser: http://sourceforge.net/p/snapcpp/code/ci/master/tree/snapCMakeModules/
+X-DH-Compat: 15
 
 Package: snapcmakemodules
 Section: devel
