@@ -1,3 +1,9 @@
+snapcmakemodules (1.0.72.1~bionic) bionic; urgency=high
+
+  * Fix compatibility level.
+
+ -- Alexis Wilke <alexis@m2osw.com>  Sun, 06 Jul 2025 12:35:18 -0700
+
 snapcmakemodules (1.0.72.0~bionic) bionic; urgency=high
 
   * Removed "CodeBlocks", which is not compatible anymore.
@@ -8,7 +14,7 @@ snapcmakemodules (1.0.72.0~bionic) bionic; urgency=high
   * Fixed clean dependencies generator to avoid duplicates.
   * Allow for sanitizer options definitions from projects.
 
- -- Alexis Wilke <alexis@m2osw.com>  Fri, 10 Nov 2023 11:24:27 -0800
+ -- Alexis Wilke <alexis@m2osw.com>  Sun, 06 Jul 2025 09:26:35 -0700
 
 snapcmakemodules (1.0.71.0~bionic) bionic; urgency=high
 
