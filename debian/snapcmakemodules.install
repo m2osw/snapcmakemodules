@@ -1,2 +1,2 @@
-usr/bin
-usr/share
+debian/snapcmakemodules/usr/bin
+debian/snapcmakemodules/usr/share
