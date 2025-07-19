@@ -317,15 +317,17 @@ then
     echo "error: could not gather the name of the project, which is mandatory."
     exit 1
 fi
-LOCK_FILE=/run/user/${UID}/mk-${PROJECT_NAME}.lock
-unlock_script() {
-    rm -f ${LOCK_FILE}
-}
+LOCK_PATH="${BUILD}/${TYPE}/tmp"
+mkdir -p ${LOCK_PATH}
+LOCK_FILE="${LOCK_PATH}/mk-${PROJECT_NAME}.lock"
 if ! (set -o noclobber; echo > ${LOCK_FILE})
 then
     echo "error: the \"mk\" for project ${PROJECT_NAME} script is currently running, second instance canceled."
     exit 1
 fi
+unlock_script() {
+    rm -f ${LOCK_FILE}
+}
 trap unlock_script EXIT
 
 ##
