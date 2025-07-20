@@ -1,3 +1,9 @@
+snapcmakemodules (1.0.72.5~bionic) bionic; urgency=high
+
+  * Change the lock file folder from /run/user/... to the BUILD directory.
+
+ -- Alexis Wilke <alexis@m2osw.com>  Sat, 19 Jul 2025 19:53:18 -0700
+
 snapcmakemodules (1.0.72.4~bionic) bionic; urgency=high
 
   * Move the data under the debian folder.
