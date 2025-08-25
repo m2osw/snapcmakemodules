@@ -214,6 +214,21 @@ then
     touch "${PUBLISH_DIR}/writable"
     rm "${PUBLISH_DIR}/writable"
 
+    BUILD_JSON="${HOME}/.cache/snapbuilder/${PROJECT_NAME}.json"
+    if test -f "${BUILD_JSON}"
+    then
+        BUILD_VERSION=`jq -r .entries[0].source_package_version ~/.cache/snapbuilder/snapdev.json | sed -e 's/\~.*//' -e 's/\(^[0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/'`
+        if dpkg --compare-versions "${VERSION}" le "${BUILD_VERSION}"
+        then
+            echo "error: ${PROJECT_NAME} version ${VERSION} was already published on launchpad."
+            exit 1
+        fi
+    else
+        echo "warning:"
+        echo "warning: unknown version from launchpad (JSON file missing \"${BUILD_JSON}\")"
+        echo "warning:"
+    fi
+
     if test -d "${PUBLISH_DIR}/${PROJECT_NAME}/${PROJECT_NAME}-${VERSION}" -a -z "${TESTS}"
     then
         echo "warning: a published directory with the current version of ${PROJECT_NAME} already exists:"
