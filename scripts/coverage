@@ -223,6 +223,7 @@ then
             echo "error: ${PROJECT_NAME} version ${VERSION} was already published on launchpad."
             exit 1
         fi
+        echo "info: found launchpad version ${BUILD_VERSION}"
     else
         echo "warning:"
         echo "warning: unknown version from launchpad (JSON file missing \"${BUILD_JSON}\")"
