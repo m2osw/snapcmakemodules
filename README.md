@@ -1,25 +1,16 @@
 
 <p align="center">
-<img alt="advgetopt" title="CMake Module Extensions to Build Snap! C++."
+<img alt="cmake" title="CMake Module Extensions to Build Snap! C++."
 src="https://snapwebsites.org/sites/snapwebsites.org/files/images/cmake_logo_slider.png" width="410" height="232"/>
 </p>
 
-# Snap! CMake modules
+# Snap! CMake Modules
 
 This project provides base CMake modules for use with the `snapcpp` suite of
-software libraries, servers, and utilities.
+software libraries, services, and utilities.
 
-The modules include shell and Perl scripts as helpers to run various tests
-on our source files (i.e. basic machine processed code reviews.)
-
-
-# Todo
-
-We want to remove all the `PATH_SUFFIXES` from our `find_path()` calls
-because we should have them in the `#include ...` instead. These
-should be used only if the library may be installed without that
-suffix on some systems. In all other cases, it is a much better idea
-to have the suffix in the include declaration.
+The modules include shell, python, and Perl scripts as helpers to run various
+tests on our source files (i.e. basic machine processed code reviews).
 
 
 # Bugs

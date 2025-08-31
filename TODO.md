@@ -1,5 +1,5 @@
 
-* The python script makes sure to remove duplicates from the deps.make.
+* The python script makes sure to remove duplicates from the deps.make,
   so the final SVG file looks good even if the dependency list is duplicated
   two or more times. It would be better to avoid the duplication from
   happening which at this time I do not know how to fix...
