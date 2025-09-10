@@ -216,10 +216,10 @@ then
     BUILD_JSON="${HOME}/.cache/snapbuilder/${PROJECT_NAME}.json"
     if test -f "${BUILD_JSON}"
     then
-        BUILD_VERSION=`jq -r .entries[0].source_package_version ~/.cache/snapbuilder/snapdev.json | sed -e 's/\~.*//' -e 's/\(^[0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/'`
+        BUILD_VERSION=`jq -r .entries[0].source_package_version ~/.cache/snapbuilder/${PROJECT_NAME}.json | sed -e 's/\~.*//' -e 's/\(^[0-9]\+\.[0-9]\+\.[0-9]\+\).*/\1/'`
         if dpkg --compare-versions "${VERSION}" le "${BUILD_VERSION}"
         then
-            echo "error: ${PROJECT_NAME} version ${VERSION} was already published on launchpad."
+            echo "error: ${PROJECT_NAME} version ${VERSION} was already published on launchpad (${BUILD_VERSION})."
             exit 1
         fi
         echo "info: found launchpad version ${BUILD_VERSION}"
