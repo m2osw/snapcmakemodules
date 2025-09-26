@@ -399,6 +399,8 @@ then
 fi
 
 process() {
+    echo "info: starting build process on `date`"
+
     ##
     ## LOCAL CLEAN UP
     ##
@@ -522,6 +524,8 @@ process() {
         fi
         bin/send-to-launchpad.sh ${PROJECT}
     fi
+
+    echo "info: build process done on `date`"
 }
 
 if ${LESS}
@@ -536,12 +540,12 @@ fi
 if [[ ${RESULT} -ne 0 ]]
 then
     echo
-    echo "Build, Tests/Coverage, or Upload failed."
+    echo "Build, Tests/Coverage, or Upload failed on `date`."
     if test -n "${COVERAGE}"
     then
         echo "Test output is here: ${BINARY_DIR}/coverage/test_log.txt"
     fi
-    exit 1
+    exit ${RESULT}
 fi
 
 echo
