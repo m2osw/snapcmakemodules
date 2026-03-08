@@ -156,13 +156,25 @@ do
             echo "  --catch-exceptions        Ask debugger to also catch exceptions."
             echo "  --coverage | -c           Run the tests to determine coverage."
             echo "                            Use -t with -c to only run coverage for those tests."
-            echo "  --list-tests [tests|tags] List available tests."
-            echo "  --seed <seed>             Define the seed."
+            echo "  --list-tests [tests|tags|reporters|listeners]"
+            echo "                            List available tests, tags, reporters, listeners."
+            echo "  --seed <seed1> [<seed2>]  Define \"our\" seed and catch2 seed; since tests"
+            echo "                            are run in a random order now, it is very important"
+            echo "                            to include both seeds to replicate some issues."
             echo "  --test | -t [<name> ...]  Build and then run the tests."
             echo "                            Test names can be written separated by commas"
             echo "                            in which case you cannot include any spaces:"
             echo "                               -t a b c   or   -t a,b,c"
             echo "  --tg [<name> ...]         Like --test but run the tests with the debugger."
+            echo
+            echo "\"our\" seed is defined with a line that looks like this:"
+            echo "   ${PROJECT} v${FULL_VERSION} [1151003]:unittest: seed is 1772903729"
+            echo
+            echo "The catch2 seed is defined with a line that looks like this:"
+            echo "   Randomness seeded to: 1946389100"
+            echo
+            echo "In that case use:  ... --seed 1772903729 1946389100 ..."
+            echo "If a test fails on its own, then the catch2 seed is not required."
         fi
 
         exit 0
@@ -242,6 +254,11 @@ do
         shift
         TEST_SEED="--seed $1"
         shift
+        if [[ "${1}" != "" && "${1}" != "-"* ]]
+        then
+            TEST_SEED="${TEST_SEED} --rng-seed ${1}"
+            shift
+        fi
         ;;
 
     "--test"|"-t"|"--tg")
@@ -289,7 +306,6 @@ done
 ## Further variable initialization
 ##
 OUTPUT="${BUILD}/${TYPE}/${CONTRIBDIR}${PROJECT}"
-PROJECT_TMPDIR="${OUTPUT}/tmp"
 
 BINARY_DIR="`cd ${OUTPUT} && pwd`"
 RESULT=${?}
@@ -298,6 +314,8 @@ then
     echo "error: could not cd to OUTPUT directory \"${OUTPUT}\"."
     exit 1
 fi
+
+PROJECT_TMPDIR="${BINARY_DIR}/tmp"
 
 DIST_DIR="`cd ${BUILD}/${TYPE}/dist && pwd`"
 RESULT=${?}
@@ -460,10 +478,11 @@ process() {
                 --binary-dir "${BINARY_DIR}" \
                 --dist-dir "${DIST_DIR}" \
                 --source-dir "${SOURCE}" \
-                ${TEST_LIST}
+                    ${TEST_LIST}
         elif ${TEST}
         then
-            echo "${OUTPUT}/tests/unittest --tmp-dir \"${PROJECT_TMPDIR}\" --binary-dir \"${BINARY_DIR}\" --dist-dir \"${DIST_DIR}\" --source-dir \"${SOURCE}\" ${PROJECT_TEST_ARGS} ${TEST_SEED} --progress \"${TESTS}\" ${TEST_OPTIONS}"
+            PREMATURE_EXIT_FILENAME="${PROJECT_TMPDIR}/catch2-running.tmp"
+            echo "${OUTPUT}/tests/unittest --tmp-dir \"${PROJECT_TMPDIR}\" --binary-dir \"${BINARY_DIR}\" --dist-dir \"${DIST_DIR}\" --source-dir \"${SOURCE}\" --premature-exit-guard-file "${PREMATURE_EXIT_FILENAME}" ${PROJECT_TEST_ARGS} ${TEST_SEED} --progress ${TEST_OPTIONS} \"${TESTS}\""
             if ${TEST_DBG}
             then
                 gdb ${CATCH_EXCEPTIONS} \
@@ -473,6 +492,7 @@ process() {
                         --binary-dir "${BINARY_DIR}" \
                         --dist-dir "${DIST_DIR}" \
                         --source-dir "${SOURCE}" \
+                        --premature-exit-guard-file "${PREMATURE_EXIT_FILENAME}" \
                         ${PROJECT_TEST_ARGS} \
                         ${TEST_SEED} \
                         --progress \
@@ -481,6 +501,10 @@ process() {
 
                 # the check of the result in this case is not quite relevant
                 echo "info: gdb exited."
+                if test -f "${PREMATURE_EXIT_FILENAME}"
+                then
+                    echo "warning: \"${PREMATURE_EXIT_FILENAME}\" is still present."
+                fi
                 return 0
             fi
 
@@ -497,6 +521,7 @@ process() {
                     --binary-dir "${BINARY_DIR}" \
                     --dist-dir "${DIST_DIR}" \
                     --source-dir "${SOURCE}" \
+                    --premature-exit-guard-file "${PREMATURE_EXIT_FILENAME}" \
                     ${PROJECT_TEST_ARGS} \
                     ${TEST_SEED} \
                     --progress \
@@ -504,6 +529,14 @@ process() {
                         "${TESTS}" | tee ${OUTPUT}/tests/tests.log
             RESULT=${PIPESTATUS[0]}
             echo "info: test logs were saved in: \"${OUTPUT}/tests/tests.log\"."
+            if test -f "${PREMATURE_EXIT_FILENAME}"
+            then
+                echo "error: \"${PREMATURE_EXIT_FILENAME}\" is still present."
+                if [[ ${RESULT} -eq 0 ]]
+                then
+                    RESULT=1
+                fi
+            fi
             if [[ ${RESULT} -ne 0 ]]
             then
                 echo "error: test(s) failed."
