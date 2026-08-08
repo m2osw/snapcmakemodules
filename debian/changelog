@@ -1,3 +1,14 @@
+snapcmakemodules (1.0.73.0~bionic) bionic; urgency=high
+
+  * Verify version against launchpad version before running test to avoid
+    smashing the wrong version.
+  * Updated license to GPL3.
+  * Fixed version checking that used snapdev at some point.
+  * Added the -rdynamic option to get much better stack traces.
+  * Clean ups.
+
+ -- Alexis Wilke <alexis@m2osw.com>  Sat, 19 Jul 2025 19:53:18 -0700
+
 snapcmakemodules (1.0.72.5~bionic) bionic; urgency=high
 
   * Change the lock file folder from /run/user/... to the BUILD directory.
