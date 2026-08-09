@@ -394,6 +394,17 @@ function(ConfigureMakeProject)
         message(FATAL_ERROR "You must specify COMPONENT (main, build, config, non-free, etc)!")
     endif()
 
+    # BUILD_TARGETS is empty only on the very first call in this configure
+    # run. Use that to decide whether deps.make needs a fresh header. If not
+    # empty, check for duplicate calls for the same project within this run.
+    #
+    get_property(CURRENT_BUILD_TARGETS GLOBAL PROPERTY BUILD_TARGETS)
+    if(NOT CURRENT_BUILD_TARGETS)
+        file(WRITE "${CMAKE_BINARY_DIR}/deps.make" "# skeleton Makefile showing build dependencies\n\n")
+    elseif(ARG_PROJECT_NAME IN_LIST CURRENT_BUILD_TARGETS)
+        message(FATAL_ERROR "Project '${ARG_PROJECT_NAME}' is configured more than once.")
+    endif()
+
     message(STATUS "Searching dependencies for project '${ARG_PROJECT_NAME}'")
     execute_process(
         COMMAND ${FIND_DEPS_SCRIPT} ${DEP_CACHE_FILE} ${ARG_PROJECT_NAME}
@@ -406,9 +417,6 @@ function(ConfigureMakeProject)
     endif()
     separate_arguments(DEPENDS_LIST)
 
-    if(NOT EXISTS "${CMAKE_BINARY_DIR}/deps.make")
-        file(WRITE "${CMAKE_BINARY_DIR}/deps.make" "# skeleton Makefile showing build dependencies\n\n")
-    endif()
     file(APPEND "${CMAKE_BINARY_DIR}/deps.make" "${ARG_PROJECT_NAME}:")
     foreach(DEP ${DEPENDS_LIST})
         file(APPEND "${CMAKE_BINARY_DIR}/deps.make" " ${DEP}")
