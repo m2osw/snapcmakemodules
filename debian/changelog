@@ -1,3 +1,9 @@
+snapcmakemodules (1.0.73.1~bionic) bionic; urgency=high
+
+  * Fixed bug with generating the clean-dependencies.svg file.
+
+ -- Alexis Wilke <alexis@m2osw.com>  Sun, 09 Aug 2026 11:04:36 -0700
+
 snapcmakemodules (1.0.73.0~bionic) bionic; urgency=high
 
   * Verify version against launchpad version before running test to avoid
