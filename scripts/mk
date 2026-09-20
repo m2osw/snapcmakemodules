@@ -526,7 +526,7 @@ process() {
                     ${TEST_SEED} \
                     --progress \
                     ${TEST_OPTIONS} \
-                        "${TESTS}" | tee ${OUTPUT}/tests/tests.log
+                        "${TESTS}" 2>&1 | tee ${OUTPUT}/tests/tests.log
             RESULT=${PIPESTATUS[0]}
             echo "info: test logs were saved in: \"${OUTPUT}/tests/tests.log\"."
             if test -f "${PREMATURE_EXIT_FILENAME}"
