@@ -83,6 +83,7 @@ if(CMAKE_BUILD_TYPE STREQUAL "Debug")
     if(${SANITIZE})
         message("*** SANITIZE TURNED ON ***")
         set(SANITIZE_SWITCH "-fsanitize=address -fsanitize=enum -fsanitize=unreachable")
+        # Note: tested "-fsanitize=undefined", but it breaks our serverplugins at the moment (plugins do not define their typeid)
     endif()
 endif()
 
