@@ -317,6 +317,13 @@ fi
 
 PROJECT_TMPDIR="${BINARY_DIR}/tmp"
 
+if test -f "${BUILD}/${TYPE}/THREAD"
+then
+    LAUNCH_COMMAND="setarch $(uname -m) --addr-no-randomize"
+else
+    LAUNCH_COMMAND=""
+fi
+
 DIST_DIR="`cd ${BUILD}/${TYPE}/dist && pwd`"
 RESULT=${?}
 if [[ ${RESULT} != 0 ]]
@@ -442,7 +449,7 @@ process() {
     ##
     ## BUILD PROJECT
     ##
-    make -j${PROCESSORS} -C ${OUTPUT} ${TARGET}
+    ${LAUNCH_COMMAND} make -j${PROCESSORS} -C ${OUTPUT} ${TARGET}
     RESULT=${?}
     if [[ ${RESULT} -ne 0 ]]
     then
@@ -454,9 +461,9 @@ process() {
     then
         if test -n "${TEST_OPTIONS}"
         then
-            ${COVERAGE} --args "--progress ${TEST_OPTIONS}" "${TESTS}"
+            ${LAUNCH_COMMAND} ${COVERAGE} --args "--progress ${TEST_OPTIONS}" "${TESTS}"
         else
-            ${COVERAGE} "${TESTS}"
+            ${LAUNCH_COMMAND} ${COVERAGE} "${TESTS}"
         fi
         RESULT=${?}
         if [[ ${RESULT} -ne 0 ]]
@@ -472,7 +479,7 @@ process() {
 
         if test -n "${TEST_LIST}"
         then
-            ${OUTPUT}/tests/unittest \
+            ${LAUNCH_COMMAND} ${OUTPUT}/tests/unittest \
                 --colour-mode ansi \
                 --tmp-dir "${PROJECT_TMPDIR}" \
                 --binary-dir "${BINARY_DIR}" \
@@ -485,7 +492,7 @@ process() {
             echo "${OUTPUT}/tests/unittest --tmp-dir \"${PROJECT_TMPDIR}\" --binary-dir \"${BINARY_DIR}\" --dist-dir \"${DIST_DIR}\" --source-dir \"${SOURCE}\" --premature-exit-guard-file "${PREMATURE_EXIT_FILENAME}" ${PROJECT_TEST_ARGS} ${TEST_SEED} --progress ${TEST_OPTIONS} \"${TESTS}\""
             if ${TEST_DBG}
             then
-                gdb ${CATCH_EXCEPTIONS} \
+                ${LAUNCH_COMMAND} gdb ${CATCH_EXCEPTIONS} \
                     -ex 'run' \
                     --args ${OUTPUT}/tests/unittest \
                         --tmp-dir "${PROJECT_TMPDIR}" \
@@ -514,7 +521,7 @@ process() {
                 BIGTIME="--verbose"
             fi
 
-            /usr/bin/time ${BIGTIME} \
+            ${LAUNCH_COMMAND} /usr/bin/time ${BIGTIME} \
                 ${OUTPUT}/tests/unittest \
                     --colour-mode ansi \
                     --tmp-dir "${PROJECT_TMPDIR}" \
@@ -525,6 +532,7 @@ process() {
                     ${PROJECT_TEST_ARGS} \
                     ${TEST_SEED} \
                     --progress \
+                    --durations=yes \
                     ${TEST_OPTIONS} \
                         "${TESTS}" 2>&1 | tee ${OUTPUT}/tests/tests.log
             RESULT=${PIPESTATUS[0]}
@@ -539,7 +547,12 @@ process() {
             fi
             if [[ ${RESULT} -ne 0 ]]
             then
-                echo "error: test(s) failed."
+                if [[ ${RESULT} -eq 1 ]]
+                then
+                    echo "error: ${RESULT} test(s) failed."
+                else
+                    echo "error: ${RESULT} tests failed."
+                fi
                 return 1
             fi
         fi

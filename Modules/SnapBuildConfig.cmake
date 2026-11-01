@@ -1,6 +1,6 @@
 ################################################################################
 #
-# Copyright (c) 2011-2025  Made to Order Software Corp.  All Rights Reserved
+# Copyright (c) 2011-2026  Made to Order Software Corp.  All Rights Reserved
 #
 # http://snapwebsites.org/
 # contact@m2osw.com
@@ -26,7 +26,7 @@
 # If you have included Snap's Third Party package, then this module will
 # point to that instead of trying to locate it on the system.
 #
-include( CMakeParseArguments )
+include(CMakeParseArguments)
 
 find_program(FIND_DEPS_SCRIPT      SnapFindDeps.pl                 PATHS ${CMAKE_MODULE_PATH})
 find_program(INC_VERS_SCRIPT       SnapBuildIncVers.pl             PATHS ${CMAKE_MODULE_PATH})
@@ -42,8 +42,8 @@ find_program(DOT_PROGRAM           dot                                          
 # RDB: Sun Jan  8 12:42:10 PST 2017
 # Moved this to the top so it's done only once
 #
-set( THE_CMAKE_BUILD_TOOL ${CMAKE_BUILD_TOOL} )
-if( ${CMAKE_VERSION} VERSION_GREATER 3.0.0 )
+set(THE_CMAKE_BUILD_TOOL ${CMAKE_BUILD_TOOL})
+if(${CMAKE_VERSION} VERSION_GREATER 3.0.0)
     execute_process(
         COMMAND nproc
         #OUTPUT_VARIABLE NUM_PROCS
@@ -53,10 +53,10 @@ if( ${CMAKE_VERSION} VERSION_GREATER 3.0.0 )
     # http://stackoverflow.com/questions/2499070/gnu-make-should-the-number-of-jobs-equal-the-number-of-cpu-cores-in-a-system#2499574
     # The question is if we want to try num procs + 1.
     #
-    #math( EXPR NUM_JOBS "${NUM_PROCS} + 1" )
-    set( MAKEFLAGS "-j${NUM_JOBS}" CACHE STRING "Number of jobs make should run in parallel. CMake vers 3+ only!" )
-    if( NOT "${MAKEFLAGS}" STREQUAL "-j1" OR "${MAKEFLAGS}" STREQUAL "" )
-        set( THE_CMAKE_BUILD_TOOL ${CMAKE_COMMAND} -E env MAKEFLAGS=\"${MAKEFLAGS}\" ${CMAKE_BUILD_TOOL} )
+    #math(EXPR NUM_JOBS "${NUM_PROCS} + 1")
+    set(MAKEFLAGS "-j${NUM_JOBS}" CACHE STRING "Number of jobs make should run in parallel. CMake version 3+ only!")
+    if(NOT "${MAKEFLAGS}" STREQUAL "-j1" OR "${MAKEFLAGS}" STREQUAL "")
+        set(THE_CMAKE_BUILD_TOOL ${CMAKE_COMMAND} -E env MAKEFLAGS=\"${MAKEFLAGS}\" ${CMAKE_BUILD_TOOL})
     endif()
 endif()
 
@@ -66,22 +66,22 @@ endif()
 # RDB: Sun Jul 31 18:44:37 PDT 2016
 # Moved this to the top of the file.
 #
-set( DEBUILD_EMAIL_DEFAULT "Build Server <build@m2osw.com>" )
-if( DEFINED ENV{DEBEMAIL} )
-    set( DEBUILD_EMAIL_DEFAULT $ENV{DEBEMAIL} )
+set(DEBUILD_EMAIL_DEFAULT "Build Server <build@m2osw.com>")
+if(DEFINED ENV{DEBEMAIL})
+    set(DEBUILD_EMAIL_DEFAULT $ENV{DEBEMAIL})
 endif()
-set( DEBUILD_PLATFORM "xenial"                         CACHE STRING   "Name of the Debian/Ubuntu platform to build against." )
-set( DEBUILD_EMAIL    "${DEBUILD_EMAIL_DEFAULT}"       CACHE STRING   "Email address of the package signer."                 )
-set( DEP_CACHE_FILE   "${CMAKE_BINARY_DIR}/deps.cache" CACHE INTERNAL "Cache file for dependencies."                         )
-set( REPO_ROOT_DIR    "/var/www/debian/nightly"        CACHE PATH     "Root level where the repository will go."             )
+set(DEBUILD_PLATFORM "xenial"                         CACHE STRING   "Name of the Debian/Ubuntu platform to build against.")
+set(DEBUILD_EMAIL    "${DEBUILD_EMAIL_DEFAULT}"       CACHE STRING   "Email address of the package signer."                )
+set(DEP_CACHE_FILE   "${CMAKE_BINARY_DIR}/deps.cache" CACHE INTERNAL "Cache file for dependencies."                        )
+set(REPO_ROOT_DIR    "/var/www/debian/nightly"        CACHE PATH     "Root level where the repository will go."            )
 
-message( STATUS "Scanning all projects..." )
+message(STATUS "Scanning all projects...")
 execute_process(
     COMMAND ${MAKE_DEPS_SCRIPT} ${CMAKE_SOURCE_DIR} ${DEP_CACHE_FILE}
     WORKING_DIRECTORY ${CMAKE_BINARY_DIR}
 )
 
-option( INCREMENT_BUILD_NUMBERS "Increment the build number in the version of all debian/changelog files." OFF )
+option(INCREMENT_BUILD_NUMBERS "Increment the build number in the version of all debian/changelog files." OFF)
 if(${INCREMENT_BUILD_NUMBERS})
     add_custom_target(
         snap-incvers
@@ -103,8 +103,8 @@ else()
     )
 endif()
 
-option( INCREMENT_DEPENDENCIES "Increment ALL dependencies in all packages." OFF )
-if( ${INCREMENT_DEPENDENCIES} )
+option(INCREMENT_DEPENDENCIES "Increment ALL dependencies in all packages." OFF)
+if(${INCREMENT_DEPENDENCIES})
     add_custom_target(
         snap-incdeps
         COMMAND ${INC_DEPS_SCRIPT} ${DEP_CACHE_FILE}
@@ -206,9 +206,17 @@ function(ConfigureMakeProjectInternal)
         endif()
         unset(SANITIZE_OPT)
         option(SANITIZE "Sanitize addresses for ${PROJECT_NAME}. Debug mode only." OFF)
+        option(SANITIZE_THREAD "Sanitize thread for ${PROJECT_NAME}. Debug mode only." OFF)
         if("${CMAKE_BUILD_TYPE}" STREQUAL "Debug")
+            if(SANITIZE AND SANITIZE_THREAD)
+                message(FATAL_ERROR "SANITIZE and SANITIZE_THREAD are mutually exclusive.")
+            endif()
             if(${SANITIZE})
                 set(SANITIZE_OPT "-DSANITIZE:BOOL=TRUE")
+            endif()
+            if(${SANITIZE_THREAD})
+                set(SANITIZE_OPT "-DSANITIZE_THREAD:BOOL=TRUE")
+                file(WRITE "${CMAKE_BINARY_DIR}/THREAD" "# flag -fsanitize=thread\n")
             endif()
         endif()
 

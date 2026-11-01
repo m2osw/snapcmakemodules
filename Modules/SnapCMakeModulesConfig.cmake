@@ -1,6 +1,6 @@
 ################################################################################
 #
-# Copyright (c) 2011-2025  Made to Order Software Corp.  All Rights Reserved
+# Copyright (c) 2011-2026  Made to Order Software Corp.  All Rights Reserved
 #
 # http://snapwebsites.org/
 # contact@m2osw.com
@@ -79,11 +79,19 @@ set(CMAKE_CXX11_STANDARD_COMPILE_OPTION "")
 
 
 option(SANITIZE "Sanitize addresses, enumerations, unreachable code for ${PROJECT_NAME}. Debug mode only." OFF)
+option(SANITIZE_THREAD "Sanitize threads, enumerations, unreachable code for ${PROJECT_NAME}. Debug mode only." OFF)
 if(CMAKE_BUILD_TYPE STREQUAL "Debug")
+    # Note: tested "-fsanitize=undefined", but it breaks our serverplugins at the moment (plugins do not define their typeid)
+    if(${SANITIZE} AND ${SANITIZE_THREAD})
+        message(FATAL_ERROR "SANITIZE and SANITIZE_THREAD are mutually exclusive.")
+    endif()
     if(${SANITIZE})
-        message("*** SANITIZE TURNED ON ***")
+        message("*** SANITIZE ADDRESS TURNED ON ***")
         set(SANITIZE_SWITCH "-fsanitize=address -fsanitize=enum -fsanitize=unreachable")
-        # Note: tested "-fsanitize=undefined", but it breaks our serverplugins at the moment (plugins do not define their typeid)
+    endif()
+    if(${SANITIZE_THREAD})
+        message("*** SANITIZE THREAD TURNED ON ***")
+        set(SANITIZE_SWITCH "-fsanitize=thread -fsanitize=enum -fsanitize=unreachable")
     endif()
 endif()
 
